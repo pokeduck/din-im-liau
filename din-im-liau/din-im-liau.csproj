@@ -7,4 +7,9 @@
     <RootNamespace>din_im_liau</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="../Libraries/Models/Models.csproj" />
+    <ProjectReference Include="../Libraries/Common/Common.csproj" />
+    <ProjectReference Include="../Libraries/Services/Services.csproj" />
+  </ItemGroup>
 </Project>

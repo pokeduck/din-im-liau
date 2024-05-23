@@ -1,5 +1,6 @@
 using Services.Extensions;
-
+using Microsoft.AspNetCore.Http;
+using System.Net;
 try
 {
     var builder = WebApplication.CreateBuilder(args);
@@ -23,6 +24,12 @@ try
         options.IncludeSubDomains = true;
         options.MaxAge = TimeSpan.FromSeconds(30);
     });
+
+    // builder.Services.AddHttpsRedirection(options =>
+    // {
+    //     options.RedirectStatusCode = StatusCodes.Status307TemporaryRedirect;
+    //     options.HttpsPort = 7017;
+    // });
 
     var app = builder.Build();
 

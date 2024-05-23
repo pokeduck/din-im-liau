@@ -1,5 +1,5 @@
 @page
-
+@model din_im_liau.Pages.Login.IndexModel;
 @{
   Layout = null;
 }
@@ -97,6 +97,9 @@
     function handleCredentialResponse(response) {
       // decodeJwtResponse() is a custom function defined by you
       // to decode the credential response.
+      console.log(response);
+      alert(response.credential);
+
       const responsePayload = decodeJwtResponse(response.credential);
 
       console.log("ID: " + responsePayload.sub);
@@ -118,13 +121,22 @@
     <h1 class="h3 mb-3 fw-normal">請使用 Google 帳號登入</h1>
 
 
-    <div id="g_id_onload" data-client_id="client_id" data-context="signin" data-ux_mode="popup"
-      data-callback="handleCredentialResponse" data-auto_prompt="false">
+    @* <div id="g_id_onload" data-client_id="697611657905-ide2j8m6bav95l0kcn45kn1lra6c7v3l.apps.googleusercontent.com"
+      data-context="signin" data-ux_mode="popup" data-callback="handleCredentialResponse" data-auto_prompt="false">
     </div>
 
     <div class="g_id_signin" data-type="standard" data-shape="pill" data-theme="filled_black" data-text="continue_with"
-      data-size="large" data-locale="en-US" data-logo_alignment="left" data-width="300">
+      data-size="large" data-locale="zh-TW" data-logo_alignment="right" data-width="300">
+    </div> *@
+
+    <div id="g_id_onload" data-client_id="sdfg" data-context="signin" data-ux_mode="popup"
+    data-login_uri="https://localhost:8888" data-auto_prompt="false">
     </div>
+
+    <div class="g_id_signin" data-type="standard" data-shape="rectangular" data-theme="outline" data-text="signin_with"
+    data-size="large" data-logo_alignment="left">
+    </div>
+
 
     <p class="mt-5 mb-3 text-muted">&copy; 2024</p>
 

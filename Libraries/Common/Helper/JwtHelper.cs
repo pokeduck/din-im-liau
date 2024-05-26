@@ -55,23 +55,80 @@ public class JwtHelper
     public static GoogleJwtPayloadModel contertToGooglePayload(string token)
     {
         var handler = new JsonWebTokenHandler();
-        var jwt = handler.ReadJsonWebToken(token);
+        var model = new GoogleJwtPayloadModel();
 
-        var model = new GoogleJwtPayloadModel
+        try
         {
-            Iss = jwt.GetPayloadValue<string>("iss"),
-            Azp = jwt.GetPayloadValue<string>("azp"),
-            Aud = jwt.GetPayloadValue<string>("azp"),
-            Sub = jwt.GetPayloadValue<string>("sub"),
-            Hd = jwt.TryGetPayloadValue<string>("hd") ?? jwt.GetPayloadValue<string>("hd"),
-            Email = jwt.GetPayloadValue<string>("email"),
-            EmailVerified = jwt.GetPayloadValue<bool>("email_verified"),
-            AtHash = jwt.GetPayloadValue<string>("at_hash"),
-            GivenName = jwt.GetPayloadValue<string>("given_name"),
-            FamilyName = jwt.GetPayloadValue<string>("family_name"),
-            Iat = jwt.GetPayloadValue<long>("lat"),
-            Exp = jwt.GetPayloadValue<long>("exp"),
-        };
+            var jwt = handler.ReadJsonWebToken(token);
+            if (jwt.TryGetPayloadValue<string>("iss", out var iss))
+            {
+                model.Iss = iss;
+            }
+
+            if (jwt.TryGetPayloadValue<string>("azp", out var azp))
+            {
+                model.Azp = azp;
+            }
+
+            if (jwt.TryGetPayloadValue<string>("aud", out var aud))
+            {
+                model.Aud = aud;
+            }
+
+            if (jwt.TryGetPayloadValue<string>("sub", out var sub))
+            {
+                model.Sub = sub;
+            }
+
+            if (jwt.TryGetPayloadValue<string>("hd", out var hd))
+            {
+                model.Hd = hd;
+            }
+
+            if (jwt.TryGetPayloadValue<string>("email", out var email))
+            {
+                model.Email = email;
+            }
+
+            if (jwt.TryGetPayloadValue<bool>("email_verified", out var email_verified))
+            {
+                model.EmailVerified = email_verified;
+            }
+
+            if (jwt.TryGetPayloadValue<string>("at_hash", out var asHash))
+            {
+                model.AtHash = asHash;
+            }
+
+            if (jwt.TryGetPayloadValue<string>("picture", out var picture))
+            {
+                model.Picture = picture;
+            }
+            if (jwt.TryGetPayloadValue<string>("given_name", out var givenName))
+            {
+                model.GivenName = givenName;
+            }
+            if (jwt.TryGetPayloadValue<string>("family_name", out var familyName))
+            {
+                model.FamilyName = familyName;
+            }
+            if (jwt.TryGetPayloadValue<long>("iat", out var iat))
+            {
+                model.Iat = iat;
+            }
+            if (jwt.TryGetPayloadValue<long>("exp", out var exp))
+            {
+                model.Exp = exp;
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.ToString());
+        }
+
         return model;
+
+
+
     }
 }

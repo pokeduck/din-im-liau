@@ -2,6 +2,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.ObjectPool;
 using Services.Helper;
 
 namespace din_im_liau.Pages.Login;
@@ -35,10 +36,20 @@ public partial class Oauth2GoogleTokenResponse
     public string IdToken { get; set; }
 }
 
+public class GoogleViewModel
+{
+    public string email { get; set; }
+    public string fullName { get; set; }
+    public string thumbnailUrl { get; set; }
+
+    public string googleUserId { get; set; }
+}
+
 public class GoogleModel : PageModel
 {
-    public GoogleModel() { }
 
+    public GoogleViewModel GoogleViewModel { get; set; }
+    public GoogleModel() { }
     public async Task<IActionResult> OnGet([FromQuery] GoogleOAuthResponse response)
     {
         Console.WriteLine(response.ToString());
@@ -64,6 +75,17 @@ public class GoogleModel : PageModel
         Console.WriteLine(model.Email);
 
         //RedirectToPage("GoogleVerifyToken");
+
+        var vm = new GoogleViewModel
+        {
+            email = model.Email ?? "",
+            fullName = model.GivenName ?? "" + model.FamilyName ?? "",
+            googleUserId = model.Sub ?? "",
+            thumbnailUrl = model.Picture ?? ""
+        };
+
+        GoogleViewModel = vm;
+
         return Page();
 
     }

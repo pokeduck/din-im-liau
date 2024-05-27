@@ -1,6 +1,8 @@
 using Services.Extensions;
 using Microsoft.AspNetCore.Http;
 using System.Net;
+using Models.DataModels;
+using Microsoft.EntityFrameworkCore;
 try
 {
     var builder = WebApplication.CreateBuilder(args);
@@ -25,6 +27,13 @@ try
         options.MaxAge = TimeSpan.FromSeconds(30);
     });
 
+    builder.Services.AddDbContext<DataContext>(options =>
+    {
+        var dbString = builder.Configuration.GetConnectionString("MySql");
+        options.UseMySql(dbString, new MySqlServerVersion(new Version(8, 8, 8)));
+
+    });
+
     // builder.Services.AddHttpsRedirection(options =>
     // {
     //     options.RedirectStatusCode = StatusCodes.Status307TemporaryRedirect;
@@ -32,6 +41,10 @@ try
     // });
 
     var app = builder.Build();
+
+    //using var scope = app.Services.CreateScope();
+    //var db = scope.ServiceProvider.GetRequiredService<DataContext>();
+    //db.Database.Migrate();
 
     // Configure the HTTP request pipeline.
     if (!app.Environment.IsDevelopment())

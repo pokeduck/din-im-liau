@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using System.Net;
 using Models.DataModels;
 using Microsoft.EntityFrameworkCore;
+using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 try
 {
     var builder = WebApplication.CreateBuilder(args);
@@ -30,8 +31,10 @@ try
     builder.Services.AddDbContext<DataContext>(options =>
     {
         var dbString = builder.Configuration.GetConnectionString("MySql");
-        options.UseMySql(dbString, new MySqlServerVersion(new Version(8, 8, 8)));
-
+        options.UseMySql(dbString, ServerVersion.Create(new Version(8, 0, 0), ServerType.MariaDb), mySqlOption =>
+        {
+            mySqlOption.MigrationsAssembly(typeof(DataContext).Assembly.FullName);
+        });
     });
 
     // builder.Services.AddHttpsRedirection(options =>
@@ -42,9 +45,9 @@ try
 
     var app = builder.Build();
 
-    //using var scope = app.Services.CreateScope();
-    //var db = scope.ServiceProvider.GetRequiredService<DataContext>();
-    //db.Database.Migrate();
+    using var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<DataContext>();
+    db.Database.Migrate();
 
     // Configure the HTTP request pipeline.
     if (!app.Environment.IsDevelopment())

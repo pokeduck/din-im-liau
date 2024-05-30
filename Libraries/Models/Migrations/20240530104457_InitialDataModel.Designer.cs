@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Models.DataModels;
 
@@ -10,9 +11,11 @@ using Models.DataModels;
 namespace Models.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20240530104457_InitialDataModel")]
+    partial class InitialDataModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -187,7 +190,7 @@ namespace Models.Migrations
                     b.ToTable("Order");
                 });
 
-            modelBuilder.Entity("Models.DataModels.OrderRecord", b =>
+            modelBuilder.Entity("Models.DataModels.OrderHistory", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -225,9 +228,7 @@ namespace Models.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OrderId");
-
-                    b.ToTable("OrderRecord");
+                    b.ToTable("OrderHistory");
                 });
 
             modelBuilder.Entity("Models.DataModels.ServingSize", b =>
@@ -348,22 +349,6 @@ namespace Models.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Topping");
-                });
-
-            modelBuilder.Entity("Models.DataModels.OrderRecord", b =>
-                {
-                    b.HasOne("Models.DataModels.Order", "order")
-                        .WithMany("orderRecords")
-                        .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("order");
-                });
-
-            modelBuilder.Entity("Models.DataModels.Order", b =>
-                {
-                    b.Navigation("orderRecords");
                 });
 #pragma warning restore 612, 618
         }

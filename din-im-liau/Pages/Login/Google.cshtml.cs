@@ -49,7 +49,12 @@ public class GoogleModel : PageModel
 {
 
     public GoogleViewModel GoogleViewModel { get; set; }
-    public GoogleModel() { }
+
+    private IConfiguration _config;
+    public GoogleModel(IConfiguration config)
+    {
+        _config = config;
+    }
     public async Task<IActionResult> OnGet([FromQuery] GoogleOAuthResponse response)
     {
         Console.WriteLine(response.ToString());
@@ -57,8 +62,8 @@ public class GoogleModel : PageModel
         client.BaseAddress = new Uri("https://oauth2.googleapis.com");
 
         var formData = new Dictionary<string, string>();
-        formData.Add("client_id", "697611657905-ide2j8m6bav95l0kcn45kn1lra6c7v3l.apps.googleusercontent.com");
-        formData.Add("client_secret", "");
+        formData.Add("client_id", _config["Google:ClientId"] ?? "");
+        formData.Add("client_secret", _config["Google:ClientSecret"] ?? "");
         formData.Add("code", response.code);
         formData.Add("grant_type", "authorization_code");
         formData.Add("redirect_uri", "https://localhost:8888/login/google");

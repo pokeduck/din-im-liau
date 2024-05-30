@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>din_im_liau</RootNamespace>
+    <UserSecretsId>aaf5a89e-ba27-40f1-9d0b-5da37639ce0e</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -27,4 +28,5 @@
     </PackageReference>
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.2" />
   </ItemGroup>
+
 </Project>

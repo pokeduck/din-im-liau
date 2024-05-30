@@ -40,4 +40,7 @@ public class Account : BaseDataModel, IUpdateEntity, ICreateEntity
     [Required]
     public long UpdateTime { get; set; }
 
+
+    public ICollection<Order> Orders { get; set; } = new List<Order>();
+
 }

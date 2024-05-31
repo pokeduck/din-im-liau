@@ -1,6 +1,7 @@
 
 
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Models.ViewModels;
 
 #nullable disable warnings
@@ -40,6 +41,9 @@ public class Account : BaseDataModel, IUpdateEntity, ICreateEntity
     [Required]
     public long UpdateTime { get; set; }
 
+
+    
+    public Permission Permission { get; set; }
 
     public ICollection<Order> Orders { get; set; } = new List<Order>();
 

@@ -33,6 +33,7 @@ public class DataContext : DbContext
         {
             action.HasMany(x => x.Orders).WithOne(x => x.Admin).HasForeignKey(x => x.AdminId).OnDelete(DeleteBehavior.NoAction);
             action.HasMany(x => x.OrderRecords).WithOne(x => x.Customer).HasForeignKey(x => x.CustomerId).OnDelete(DeleteBehavior.NoAction);
+            action.HasOne(x => x.Permission).WithMany(x => x.Accounts).OnDelete(DeleteBehavior.NoAction);
         });
 
         modelBuilder.Entity<Account>(action =>

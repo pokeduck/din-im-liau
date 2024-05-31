@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Models.DataModels;
 
@@ -10,9 +11,11 @@ using Models.DataModels;
 namespace Models.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20240531074725_CreatePermission")]
+    partial class CreatePermission
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -417,9 +420,9 @@ namespace Models.Migrations
             modelBuilder.Entity("Models.DataModels.Account", b =>
                 {
                     b.HasOne("Models.DataModels.Permission", "Permission")
-                        .WithMany("Accounts")
+                        .WithMany("Orders")
                         .HasForeignKey("PermissionId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Permission");
@@ -534,7 +537,7 @@ namespace Models.Migrations
 
             modelBuilder.Entity("Models.DataModels.Permission", b =>
                 {
-                    b.Navigation("Accounts");
+                    b.Navigation("Orders");
                 });
 
             modelBuilder.Entity("Models.DataModels.Store", b =>

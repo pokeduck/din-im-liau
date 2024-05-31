@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Models.DataModels;
 
@@ -10,9 +11,11 @@ using Models.DataModels;
 namespace Models.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20240531074852_CreatePermission2")]
+    partial class CreatePermission2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -33,6 +36,9 @@ namespace Models.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<int>("Account")
+                        .HasColumnType("int");
+
                     b.Property<long>("CreateTime")
                         .HasColumnType("bigint");
 
@@ -50,9 +56,6 @@ namespace Models.Migrations
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("varchar(50)");
-
-                    b.Property<int>("PermissionId")
-                        .HasColumnType("int");
 
                     b.Property<string>("Salt")
                         .IsRequired()
@@ -73,7 +76,7 @@ namespace Models.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PermissionId");
+                    b.HasIndex("Account");
 
                     b.ToTable("Account");
                 });
@@ -418,8 +421,8 @@ namespace Models.Migrations
                 {
                     b.HasOne("Models.DataModels.Permission", "Permission")
                         .WithMany("Accounts")
-                        .HasForeignKey("PermissionId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .HasForeignKey("Account")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Permission");

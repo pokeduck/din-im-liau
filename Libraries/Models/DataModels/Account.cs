@@ -14,15 +14,12 @@ public class Account : BaseDataModel, IUpdateEntity, ICreateEntity
     [Required]
     [MaxLength(length: 50)]
     public string Email { get; set; }
-    [Required]
-    [MaxLength(length: 50)]
-    public string googleId { get; set; }
 
     [MaxLength(length: 50)]
     public string NickName { get; set; }
     [MaxLength(length: 200)]
 
-    public string ThunbnailUrl { get; set; }
+    public string ThumbnailUrl { get; set; }
 
     [Required]
     [MaxLength(length: 50)]
@@ -42,7 +39,7 @@ public class Account : BaseDataModel, IUpdateEntity, ICreateEntity
     public long UpdateTime { get; set; }
 
 
-    
+
     public Permission Permission { get; set; }
 
     public ICollection<Order> Orders { get; set; } = new List<Order>();

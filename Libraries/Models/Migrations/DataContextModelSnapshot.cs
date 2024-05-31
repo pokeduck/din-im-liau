@@ -58,18 +58,13 @@ namespace Models.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<string>("ThunbnailUrl")
+                    b.Property<string>("ThumbnailUrl")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("varchar(200)");
 
                     b.Property<long>("UpdateTime")
                         .HasColumnType("bigint");
-
-                    b.Property<string>("googleId")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)");
 
                     b.HasKey("Id");
 

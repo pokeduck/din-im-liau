@@ -11,8 +11,8 @@ using Models.DataModels;
 namespace Models.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20240531075940_CreatePermission4")]
-    partial class CreatePermission4
+    [Migration("20240531091247_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -61,18 +61,13 @@ namespace Models.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<string>("ThunbnailUrl")
+                    b.Property<string>("ThumbnailUrl")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("varchar(200)");
 
                     b.Property<long>("UpdateTime")
                         .HasColumnType("bigint");
-
-                    b.Property<string>("googleId")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)");
 
                     b.HasKey("Id");
 

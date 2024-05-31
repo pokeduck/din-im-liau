@@ -11,8 +11,8 @@ using Models.DataModels;
 namespace Models.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20240531073207_Initial")]
-    partial class Initial
+    [Migration("20240531091255_InitialData")]
+    partial class InitialData
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -54,11 +54,14 @@ namespace Models.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("varchar(50)");
 
+                    b.Property<int>("PermissionId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Salt")
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<string>("ThunbnailUrl")
+                    b.Property<string>("ThumbnailUrl")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("varchar(200)");
@@ -66,12 +69,9 @@ namespace Models.Migrations
                     b.Property<long>("UpdateTime")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("googleId")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)");
-
                     b.HasKey("Id");
+
+                    b.HasIndex("PermissionId");
 
                     b.ToTable("Account");
                 });
@@ -265,6 +265,33 @@ namespace Models.Migrations
                     b.ToTable("OrderRecord");
                 });
 
+            modelBuilder.Entity("Models.DataModels.Permission", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<long>("CreateTime")
+                        .HasColumnType("bigint");
+
+                    b.Property<bool>("IsAdmin")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)");
+
+                    b.Property<long>("UpdateTime")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Permission");
+                });
+
             modelBuilder.Entity("Models.DataModels.ServingSize", b =>
                 {
                     b.Property<int>("Id")
@@ -385,6 +412,17 @@ namespace Models.Migrations
                     b.ToTable("Topping");
                 });
 
+            modelBuilder.Entity("Models.DataModels.Account", b =>
+                {
+                    b.HasOne("Models.DataModels.Permission", "Permission")
+                        .WithMany("Accounts")
+                        .HasForeignKey("PermissionId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Permission");
+                });
+
             modelBuilder.Entity("Models.DataModels.DrinkIceRelation", b =>
                 {
                     b.HasOne("Models.DataModels.Drink", null)
@@ -490,6 +528,11 @@ namespace Models.Migrations
             modelBuilder.Entity("Models.DataModels.Order", b =>
                 {
                     b.Navigation("orderRecords");
+                });
+
+            modelBuilder.Entity("Models.DataModels.Permission", b =>
+                {
+                    b.Navigation("Accounts");
                 });
 
             modelBuilder.Entity("Models.DataModels.Store", b =>

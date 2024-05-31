@@ -15,4 +15,7 @@ public class Sugger : BaseDataModel
     [Required]
     public int Ratio { get; set; }
 
+    public ICollection<DrinkSuggerRelation> Drinks { get; set; } = new HashSet<DrinkSuggerRelation>();
+
+
 }

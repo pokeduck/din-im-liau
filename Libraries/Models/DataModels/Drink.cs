@@ -1,5 +1,6 @@
 
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 using Models.DataModels;
 
@@ -31,4 +32,14 @@ public class Drink : BaseDataModel, ICreateEntity, IUpdateEntity
 
     [Required]
     public long UpdateTime { get; set; }
+
+    // [ForeignKey(nameof(Ice))]
+    // public ICollection<Ice> Ices { get; set; } = new HashSet<Ice>();
+
+    // [ForeignKey(nameof(Sugger))]
+    // public ICollection<Sugger> Suggers { get; set; } = new HashSet<Sugger>();
+
+    public ICollection<DrinkToppingRelation> ToppingRelations { get; set; } = new HashSet<DrinkToppingRelation>();
+    public ICollection<DrinkIceRelation> IceRelations { get; set; } = new HashSet<DrinkIceRelation>();
+    public ICollection<DrinkSuggerRelation> DrinkRelations { get; set; } = new HashSet<DrinkSuggerRelation>();
 }

@@ -15,4 +15,5 @@ public class Ice : BaseDataModel
     [Required]
     public int Ratio { get; set; }
 
+    public ICollection<DrinkIceRelation> Drinks { get; set; } = new HashSet<DrinkIceRelation>();
 }

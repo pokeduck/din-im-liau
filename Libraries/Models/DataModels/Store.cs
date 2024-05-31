@@ -1,5 +1,6 @@
 
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 using Models.DataModels;
 
@@ -22,6 +23,8 @@ public class Store : BaseDataModel
     public string Telephone { get; set; }
     [MaxLength(length: 30)]
     public string Memo { get; set; }
+
+    public ICollection<Order> Orders { get; set; } = new List<Order>();
 }
 
 

@@ -7,7 +7,7 @@ using Models.DataModels;
 #nullable disable warnings
 
 namespace Models.DataModels;
-public class DrinkToppingRelation : BaseDataModel
+public class DrinkSuggerRelation : BaseDataModel
 {
 
     [NotMapped]
@@ -16,8 +16,8 @@ public class DrinkToppingRelation : BaseDataModel
     [ForeignKey(nameof(Drink))]
     public int DrinkId { get; set; }
 
-    [ForeignKey(nameof(Topping))]
-    public int ToppingId { get; set; }
+    [ForeignKey(nameof(Sugger))]
+    public int SuggerId { get; set; }
 
 
 }

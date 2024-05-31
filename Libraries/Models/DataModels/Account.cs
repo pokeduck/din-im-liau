@@ -43,4 +43,5 @@ public class Account : BaseDataModel, IUpdateEntity, ICreateEntity
 
     public ICollection<Order> Orders { get; set; } = new List<Order>();
 
+    public ICollection<OrderRecord> OrderRecords { get; set; } = new HashSet<OrderRecord>();
 }

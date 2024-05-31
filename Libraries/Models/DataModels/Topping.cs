@@ -15,4 +15,7 @@ public class Topping : BaseDataModel
     [Required]
     public int Price { get; set; }
 
+    public ICollection<DrinkToppingRelation> Drinks { get; set; } = new HashSet<DrinkToppingRelation>();
+
+
 }

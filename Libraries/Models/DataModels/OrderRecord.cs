@@ -13,8 +13,10 @@ public class OrderRecord : BaseDataModel, ICreateEntity, IUpdateEntity
 
     [ForeignKey(nameof(Order))]
     public int OrderId { get; set; }
-    [ForeignKey(nameof(Account))]
+
     public int CustomerId { get; set; }
+    public Account Customer { get; set; }
+
     [Required]
     [MaxLength(length: 20)]
     public string DrinkName { get; set; }

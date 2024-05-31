@@ -16,10 +16,35 @@ public class DataContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
 
-        modelBuilder.Entity<OrderRecord>(action =>
+        modelBuilder.Entity<DrinkToppingRelation>(action =>
         {
-            action.HasOne(x => x.order).WithMany(x => x.orderRecords).HasForeignKey(x => x.OrderId);
+            action.HasKey(x => new { x.DrinkId, x.ToppingId });
         });
+        modelBuilder.Entity<DrinkIceRelation>(action =>
+        {
+            action.HasKey(x => new { x.DrinkId, x.IceId });
+        });
+        modelBuilder.Entity<DrinkSuggerRelation>(action =>
+        {
+            action.HasKey(x => new { x.DrinkId, x.SuggerId });
+        });
+
+        modelBuilder.Entity<Account>(action =>
+        {
+            action.HasMany(x => x.Orders).WithOne(x => x.Admin).HasForeignKey(x => x.AdminId).OnDelete(DeleteBehavior.NoAction);
+            action.HasMany(x => x.OrderRecords).WithOne(x => x.Customer).HasForeignKey(x => x.CustomerId).OnDelete(DeleteBehavior.NoAction);
+        });
+
+        modelBuilder.Entity<Account>(action =>
+        {
+
+        });
+
+
+        // modelBuilder.Entity<OrderRecord>(action =>
+        // {
+        //     action.HasOne(x => x.order).WithMany(x => x.orderRecords).HasForeignKey(x => x.OrderId);
+        // });
 
 
         var baseDataModelType = typeof(BaseDataModel);

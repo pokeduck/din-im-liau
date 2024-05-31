@@ -15,9 +15,8 @@ public class Order : BaseDataModel, ICreateEntity, IUpdateEntity
     public long EndTime { get; set; }
     [ForeignKey(nameof(Store))]
     public int StoreId { get; set; }
-    [ForeignKey(nameof(Account))]
     public int AdminId { get; set; }
-
+    public Account Admin { get; set; }
     public int TotalPrice { get; set; }
 
 

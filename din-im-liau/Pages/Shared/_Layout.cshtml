@@ -11,29 +11,43 @@
 </head>
 
 <body>
-  <header>
-    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-      <div class="container">
-        <a class="navbar-brand" asp-area="" asp-page="/Index">din_im_liau</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
-          aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-          <ul class="navbar-nav flex-grow-1">
-            <li class="nav-item">
-              <a class="nav-link text-dark" asp-area="" asp-page="/Index">Home</a>
+  <header class="p-3 mb-3 border-bottom">
+    <div class="container">
+      <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+        <a class="d-flex align-items-center mb-2 mb-lg-0 link-body-emphasis text-decoration-none" asp-page="/Index">
+          <img class="mb-4" src="~/assets/pokemon-logo.png" alt="" width="32" height="32">
+        </a>
+        <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+          <li>
+            <a asp-page="/Index" class=" nav-link px-2 link-secondary"> Home </a>
+          </li>
+          <li>
+            <a asp-page="/Login/Index" class=" nav-link px-2 link-secondary"> Login </a>
+          </li>
+          <li>
+            <a asp-page="/Privacy" class=" nav-link px-2 link-secondary"> Privacy </a>
+          </li>
+        </ul>
+        <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search">
+          <input type="search" class="form-control" placeholder="Search..." aria-label="Search">
+        </form>
+        <div class="dropdown text-end">
+          <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown"
+            aria-expanded="false">
+            <img src="~/assets/pokemon-logo.png" alt="pokemon" width="32" height="32" class="rounded-circle">
+          </a>
+          <ul class="dropdown-menu text-small" style="">
+            <li><a class="dropdown-item" href="#">New project...</a></li>
+            <li><a class="dropdown-item" href="#">Settings</a></li>
+            <li><a class="dropdown-item" href="#">Profile</a></li>
+            <li>
+              <hr class="dropdown-divider">
             </li>
-            <li class="nav-item">
-              <a class="nav-link text-dark" asp-area="" asp-page="/Privacy">Privacy</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link text-dark" asp-area="" asp-page="/Login/Index">Login</a>
-            </li>
+            <li><a class="dropdown-item" href="#">Sign out</a></li>
           </ul>
         </div>
       </div>
-    </nav>
+    </div>
   </header>
   <div class="container">
     <main role="main" class="pb-3">

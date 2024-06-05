@@ -10,12 +10,12 @@
   <link rel="stylesheet" href="~/din_im_liau.styles.css" asp-append-version="true" />
 </head>
 
-<body>
+<body class="d-flex flex-column h-100">
   <header class="p-3 mb-3 border-bottom">
     <div class="container">
       <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
         <a class="d-flex align-items-center mb-2 mb-lg-0 link-body-emphasis text-decoration-none" asp-page="/Index">
-          <img class="mb-4" src="~/assets/pokemon-logo.png" alt="" width="32" height="32">
+          <img class="my-2" src="~/assets/pokemon-logo.png" alt="" width="32" height="32">
         </a>
         <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
           <li>
@@ -31,13 +31,20 @@
         <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search">
           <input type="search" class="form-control" placeholder="Search..." aria-label="Search">
         </form>
-        <div class="dropdown text-end">
+        @* @await Component.InvokeAsync("ProfileB") *@
+        <div class="dropdown-center text-end">
           <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown"
             aria-expanded="false">
             <img src="~/assets/pokemon-logo.png" alt="pokemon" width="32" height="32" class="rounded-circle">
           </a>
-          <ul class="dropdown-menu text-small" style="">
-            <li><a class="dropdown-item" href="#">New project...</a></li>
+          <ul class="dropdown-menu dropdown-menu-end text-small mt-2" style="">
+            <li>
+              <h6 class="dropdown-header">Your.example.example.mail@gmail.com</h6>
+            </li>
+            <p>
+            <h4 class="dropdown-item disabled text-dark">Your Name NickName</h4>
+            </p>
+            <li><a class="dropdown-item" href="#">Orders</a></li>
             <li><a class="dropdown-item" href="#">Settings</a></li>
             <li><a class="dropdown-item" href="#">Profile</a></li>
             <li>
@@ -49,16 +56,26 @@
       </div>
     </div>
   </header>
+
+
   <div class="container">
-    <main role="main" class="pb-3">
+    <main role="main" class="pb-3 mb-5">
       @RenderBody()
     </main>
   </div>
 
-  <footer class="border-top footer text-muted">
-    <div class="container">
-      &copy; 2024 - din_im_liau - <a asp-area="" asp-page="/Privacy">Privacy</a>
+  <footer class="footer mt-5 py-0 fixed-bottom ">
+    <div class="container-fluid py-2 bg-dark text-white">
+      <div class="container ">
+        @* <p>&copy; 2024 - din_im_liau - <a
+        class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover"
+        asp-page="/Privacy">Privacy</a></p> *@
+        &copy; 2024 - din_im_liau - <a asp-area="" asp-page="/Privacy"
+          class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Privacy</a>
+      </div>
     </div>
+
+
   </footer>
 
   <script src="~/lib/jquery/dist/jquery.min.js"></script>

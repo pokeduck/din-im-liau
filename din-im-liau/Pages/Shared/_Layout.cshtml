@@ -23,7 +23,7 @@
             <a asp-page="/Index" class=" nav-link px-2 link-secondary"> Home </a>
           </li>
           <li>
-            <a asp-page="/Login/Index" class=" nav-link px-2 link-secondary"> Login </a>
+            <a asp-page="/User/Login" class=" nav-link px-2 link-secondary"> Login </a>
           </li>
           <li>
             <a asp-page="/Privacy" class=" nav-link px-2 link-secondary"> Privacy </a>
@@ -32,9 +32,32 @@
         <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search">
           <input type="search" class="form-control" placeholder="Search..." aria-label="Search">
         </form>
-        @await Component.InvokeAsync(nameof(Profile))
-
+        <div class="dropdown-center text-end">
+          <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown"
+            aria-expanded="false">
+            <img src="~/assets/pokemon-logo.png" alt="pokemon" width="32" height="32" class="rounded-circle">
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end text-small mt-2" style="">
+            <li>
+              <h6 class="dropdown-header">Your.example.example.mail@gmail.com</h6>
+            </li>
+            <p>
+            <h4 class="dropdown-item disabled text-dark">Your Name NickName</h4>
+            </p>
+            <li><a class="dropdown-item" href="#">Orders</a></li>
+            <li><a class="dropdown-item" href="#">Settings</a></li>
+            <li><a class="dropdown-item" href="#">Profile</a></li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+            <li><a class="dropdown-item" href="#">Sign out</a></li>
+          </ul>
+        </div>
       </div>
+
+
+
+    </div>
     </div>
   </header>
 

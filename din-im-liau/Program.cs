@@ -4,6 +4,7 @@ using System.Net;
 using Models.DataModels;
 using Microsoft.EntityFrameworkCore;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
+using Microsoft.AspNetCore.Authentication.Cookies;
 try
 {
     var builder = WebApplication.CreateBuilder(args);
@@ -12,11 +13,19 @@ try
     builder.Services.AddRazorPages();
 
     builder.Services.AddServices();
-
+    builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
     builder.Services.AddRouting(options =>
     {
         options.LowercaseUrls = true;
         options.LowercaseQueryStrings = true;
+    });
+    builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(opt =>
+    {
+        opt.Cookie.Name = "dim_in_liau_oauth_token";
+        opt.ExpireTimeSpan = TimeSpan.FromMinutes(60);
+        opt.LoginPath = "/user/login";
+        opt.LogoutPath = "/";
+        opt.AccessDeniedPath = "/error/401";
     });
 
     builder.Services.AddHttpClient();

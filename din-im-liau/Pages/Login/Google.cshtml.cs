@@ -1,9 +1,12 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using din_im_liau.Page;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.ObjectPool;
 using Services.Helper;
+using Common.Extensions;
 
 namespace din_im_liau.Pages.Login;
 
@@ -44,19 +47,23 @@ public class GoogleViewModel
 
     public string googleUserId { get; set; }
 }
-
-public class GoogleModel : PageModel
+[AllowAnonymous]
+public class GoogleModel : BasePageModel
 {
 
     public GoogleViewModel GoogleViewModel { get; set; }
 
     private IConfiguration _config;
-    public GoogleModel(IConfiguration config)
+    public GoogleModel(IConfiguration config, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
     {
         _config = config;
     }
     public async Task<IActionResult> OnGet([FromQuery] GoogleOAuthResponse response)
     {
+        if (!_httpContext.IsGoogleStateTokenValid(response.state))
+        {
+            return new RedirectToPageResult("/User/LoginError");
+        }
         Console.WriteLine(response.ToString());
         var client = new HttpClient();
         client.BaseAddress = new Uri("https://oauth2.googleapis.com");
@@ -90,9 +97,8 @@ public class GoogleModel : PageModel
         };
 
         GoogleViewModel = vm;
-
-        return Page();
-
+        var directPage = new RedirectToPageResult("/user/profile");
+        return directPage;
     }
 
     public async Task<IActionResult> OnPost([FromBody] object payload)

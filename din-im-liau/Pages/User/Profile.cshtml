@@ -1,23 +1,32 @@
 @page
-@model din_im_liau.Pages.Login.GoogleModel;
+@model din_im_liau.Pages.User.ProfileModel;
 
 @{
-  ViewData["Title"] = Model.GoogleViewModel.fullName;
+  @* ViewData["Title"] = Model.GoogleViewModel.fullName; *@
 
 }
 <div class="text-center">
-
-
-
-  <div class="card" style="width: 18rem;">
-    <div class="rounded-circle border border-5">
-      <img src="@Url.Content(Model.GoogleViewModel.thumbnailUrl)" class="card-img-top " alt="pic">
-    </div>
-
-    <div class="card-body">
-      <p>@Html.DisplayFor(modelItem => modelItem.GoogleViewModel.email)</p>
-      <p>@Html.DisplayFor(modelItem => modelItem.GoogleViewModel.fullName)</p>
-      <p>@Html.DisplayFor(modelItem => modelItem.GoogleViewModel.googleUserId)</p>
-    </div>
-  </div>
+  Profile!
 </div>
+@* <div class="text-center">
+
+
+
+<div class="card" style="width: 18rem;">
+<div class="rounded-circle border border-5">
+<img src="@Url.Content(Model.GoogleViewModel.thumbnailUrl)" class="card-img-top " alt="pic">
+</div>
+
+<div class="card-body">
+<p>@Html.DisplayFor(modelItem => modelItem.GoogleViewModel.email)</p>
+<p>@Html.DisplayFor(modelItem => modelItem.GoogleViewModel.fullName)</p>
+<p>@Html.DisplayFor(modelItem => modelItem.GoogleViewModel.googleUserId)</p>
+</div>
+</div>
+</div> *@
+
+@section Scripts {
+  <script>
+    console.log('profile');
+  </script>
+}

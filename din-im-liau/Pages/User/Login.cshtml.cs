@@ -1,19 +1,26 @@
 using Azure;
+using din_im_liau.Page;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System;
 using System.Web;
+using Common.Extensions;
+using Common.Helper;
 namespace din_im_liau.Pages.User;
-public class LoginModel : PageModel
+
+[AllowAnonymous]
+public class LoginModel : BasePageModel
 {
     private readonly IConfiguration _config;
-    public LoginModel(IConfiguration config)
+    public LoginModel(IConfiguration config, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
     {
         _config = config;
     }
     public async Task<IActionResult> OnGet()
     {
+        _httpContext.DeleteGoogleState();
         Console.WriteLine("get");
         return Page();
     }
@@ -23,8 +30,10 @@ public class LoginModel : PageModel
         var uriBuilder = new UriBuilder("https", "accounts.google.com");
         uriBuilder.Path = "/o/oauth2/v2/auth";
         var parameters = new Dictionary<string, string>();
+        var oauthState = RandomHelper.Random(32) ?? "state_token";
+        _httpContext.SetGoogleStateResponseCookie(oauthState);
 
-        parameters.Add("state", "eyJjc3JmVG9rZW4iOiI1YmEwY2E5NzRjNTJkNzA3ZTYzY2Y3ODkzY2ExODQ3NjIzZTA5NmNmMmQxZDg4NGJlNzEyMzVkMjMzOGI0OWY1IiwiYW5vbnltb3VzSWQiOiJhMjZlYTEyZS0zYzhlLTQyN2EtYTBkNy1hZjcyMTBhYTg2MDkiLCJxdWVyeSI6Ij9hcHBsaWNhdGlvbj1iaXRidWNrZXQmY29udGludWU9aHR0cHMlM0ElMkYlMkZiaXRidWNrZXQub3JnJTJGYWNjb3VudCUyRnNpZ25pbiUyRiUzRm5leHQlM0QlMjUyRiUyNnJlZGlyZWN0Q291bnQlM0QxJmxvZ2luVHlwZT1nb29nbGVCdXR0b24mcHJvbXB0PXNlbGVjdF9hY2NvdW50JnNvdXJjZT1sb2dpblNjcmVlbiIsInNvdXJjZSI6ImxvZ2luU2NyZWVuIiwibG9naW5UeXBlIjoiZ29vZ2xlQnV0dG9uIn0%3D");
+        parameters.Add("state", oauthState);
         var clientId = _config["Google:ClientId"] ?? "";
         parameters.Add("access_type", "offline");
         parameters.Add("scope", "openid email profile");

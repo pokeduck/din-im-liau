@@ -95,10 +95,12 @@ public class GoogleModel : BasePageModel
             googleUserId = model.Sub ?? "",
             thumbnailUrl = model.Picture ?? ""
         };
-
+        await SignIn();
         GoogleViewModel = vm;
+
         var directPage = new RedirectToPageResult("/user/profile");
-        return directPage;
+        var directPage2 = LocalRedirect("/user");
+        return directPage2;
     }
 
     public async Task<IActionResult> OnPost([FromBody] object payload)

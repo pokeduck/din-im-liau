@@ -5,6 +5,8 @@ using Models.DataModels;
 using Microsoft.EntityFrameworkCore;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using din_im_liau.Events;
+using Amazon.S3;
 try
 {
     var builder = WebApplication.CreateBuilder(args);
@@ -26,7 +28,10 @@ try
         opt.LoginPath = "/user/login";
         opt.LogoutPath = "/";
         opt.AccessDeniedPath = "/error/401";
+        opt.EventsType = typeof(CustomCookieAuthenticationEvents);
     });
+
+    builder.Services.AddScoped<CustomCookieAuthenticationEvents>();
 
     builder.Services.AddHttpClient();
 

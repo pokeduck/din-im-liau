@@ -19,10 +19,10 @@ public class CustomCookieAuthenticationEvents : CookieAuthenticationEvents
         var userPrincipal = context.Principal;
 
         // // Look for the LastChanged claim.
-        // var lastChanged = (from c in userPrincipal.Claims
-        //                    where c.Type == "LastChanged"
-        //                    select c.Value).FirstOrDefault();
-
+        var lastChanged = (from c in userPrincipal.Claims
+                           where c.Type == "google"
+                           select c.Value).FirstOrDefault();
+        Console.WriteLine(lastChanged);
         // if (string.IsNullOrEmpty(lastChanged) ||
         //     !_userRepository.ValidateLastChanged(lastChanged))
         // {

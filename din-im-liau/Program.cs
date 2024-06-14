@@ -7,6 +7,7 @@ using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using din_im_liau.Events;
 using Amazon.S3;
+using Models.Repositories;
 try
 {
     var builder = WebApplication.CreateBuilder(args);
@@ -32,7 +33,7 @@ try
     });
 
     builder.Services.AddScoped<CustomCookieAuthenticationEvents>();
-
+    builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
     builder.Services.AddHttpClient();
 
     builder.Services.AddHsts(options =>

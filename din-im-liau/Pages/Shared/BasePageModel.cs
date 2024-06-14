@@ -41,4 +41,8 @@ public class BasePageModel : PageModel
             authProperties
         );
     }
+
+    protected async Task SignOut() {
+        await _httpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+    }
 }

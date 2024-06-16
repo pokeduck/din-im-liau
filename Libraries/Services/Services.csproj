@@ -24,4 +24,8 @@
     <PackageReference Include="Scrutor" Version="4.2.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="../Models/Models.csproj" />
+  </ItemGroup>
+
 </Project>

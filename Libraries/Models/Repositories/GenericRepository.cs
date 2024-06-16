@@ -16,12 +16,11 @@ public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEnt
     private readonly DataContext _dataContext;
     private readonly HttpContext _httpContext;
     private readonly ClaimsPrincipal _userClaims;
-    private readonly ServiceProvider _serviceProvider;
 
-    public GenericRepository(DataContext dataContext, ServiceProvider serviceProvider, IHttpContextAccessor httpContextAccessor)
+    public GenericRepository(DataContext dataContext,
+      IHttpContextAccessor httpContextAccessor)
     {
         _dataContext = dataContext;
-        _serviceProvider = serviceProvider;
         _httpContext = httpContextAccessor.HttpContext!;
         _userClaims = _httpContext.User;
     }

@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using din_im_liau.Events;
 using Amazon.S3;
 using Models.Repositories;
+using Services;
+using Scrutor;
 try
 {
     var builder = WebApplication.CreateBuilder(args);
@@ -16,12 +18,15 @@ try
     builder.Services.AddRazorPages();
 
     builder.Services.AddServices();
-    builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+
+
     builder.Services.AddRouting(options =>
     {
         options.LowercaseUrls = true;
         options.LowercaseQueryStrings = true;
     });
+
     builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(opt =>
     {
         opt.Cookie.Name = "dim_in_liau_oauth_token";
@@ -31,9 +36,10 @@ try
         opt.AccessDeniedPath = "/error/401";
         opt.EventsType = typeof(CustomCookieAuthenticationEvents);
     });
-
     builder.Services.AddScoped<CustomCookieAuthenticationEvents>();
-    builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+
+
+
     builder.Services.AddHttpClient();
 
     builder.Services.AddHsts(options =>
@@ -52,6 +58,15 @@ try
         });
     });
 
+    builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+
+    builder.Services.RegisterBaseServices();
+
+
+    builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+
+
     // builder.Services.AddHttpsRedirection(options =>
     // {
     //     options.RedirectStatusCode = StatusCodes.Status307TemporaryRedirect;
@@ -59,7 +74,10 @@ try
     // });
 
     var app = builder.Build();
-
+    // using var scope = app.Services.CreateScope();
+    // var service = scope.ServiceProvider;
+    // var repo = service.GetRequiredService<IGenericRepository<Account>>();
+    // Console.WriteLine(repo);
     // using var scope = app.Services.CreateScope();
     // var db = scope.ServiceProvider.GetRequiredService<DataContext>();
     // db.Database.Migrate();

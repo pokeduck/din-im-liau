@@ -51,6 +51,8 @@ public class GoogleViewModel
 public class GoogleModel : BasePageModel
 {
 
+    
+
     public GoogleViewModel GoogleViewModel { get; set; }
 
     private IConfiguration _config;

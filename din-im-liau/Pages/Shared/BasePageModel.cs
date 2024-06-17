@@ -11,6 +11,7 @@ using Services;
 namespace din_im_liau.Page;
 
 [Authorize]
+[ValidateAntiForgeryToken]
 public class BasePageModel : PageModel
 {
 

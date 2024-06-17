@@ -11,6 +11,7 @@ using Common.Helper;
 namespace din_im_liau.Pages.User;
 
 [AllowAnonymous]
+[IgnoreAntiforgeryToken(Order = 1001)]
 public class LoginModel : BasePageModel
 {
     private readonly IConfiguration _config;
@@ -52,12 +53,12 @@ public class LoginModel : BasePageModel
     }
 
 
-    public async Task<IActionResult> OnPost()
+    public async Task<IActionResult> OnPostAsync()
     {
-        Console.WriteLine("post");
-        return Page();
-    }
 
+        Console.WriteLine("post");
+        return new JsonResult(new { Success = true, });
+    }
     public async Task<IActionResult> OnPostGoogleSignIn()
     {
         Console.WriteLine("post google sign in");

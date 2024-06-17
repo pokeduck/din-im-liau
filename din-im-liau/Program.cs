@@ -65,6 +65,7 @@ try
 
     builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
+    builder.Services.AddControllers();
 
 
     // builder.Services.AddHttpsRedirection(options =>
@@ -95,10 +96,12 @@ try
 
     app.UseRouting();
 
+    app.UseAuthentication();
     app.UseAuthorization();
 
-    app.MapRazorPages();
 
+    app.MapRazorPages();
+    app.MapControllers();
     app.Run();
 
     return 0;

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Models.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class InitTables : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -193,17 +193,17 @@ namespace Models.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     NickName = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    ThumbnailUrl = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: false)
+                    ThumbnailUrl = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     GoogleOpenId = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    AccessToken = table.Column<string>(type: "longtext", nullable: false)
+                    PermissionId = table.Column<int>(type: "int", nullable: false),
+                    AccessToken = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Salt = table.Column<string>(type: "longtext", nullable: false)
+                    Salt = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     CreateTime = table.Column<long>(type: "bigint", nullable: false),
-                    UpdateTime = table.Column<long>(type: "bigint", nullable: false),
-                    PermissionId = table.Column<int>(type: "int", nullable: false)
+                    UpdateTime = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {

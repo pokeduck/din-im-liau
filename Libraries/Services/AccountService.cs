@@ -21,9 +21,15 @@ public class AccountService : BaseService<Account>
         return account;
     }
 
+    public async Task<Account?> GetByAccountId(int accountId)
+    {
+        var account = await Repository.ReadFirstById(accountId);
+        return account;
+    }
+
     public async Task<Account> Create(string googleId, string nickName, string email, string thumbnailUrl)
     {
-        var newAccount = new Account { GoogleOpenId = googleId, NickName = nickName, Email = email, ThumbnailUrl = thumbnailUrl, Permission = new Permission { Id = 2 } };
+        var newAccount = new Account { GoogleOpenId = googleId, NickName = nickName, Email = email, ThumbnailUrl = thumbnailUrl, PermissionId = 2 };
         await Repository.Create(newAccount);
         return newAccount;
     }

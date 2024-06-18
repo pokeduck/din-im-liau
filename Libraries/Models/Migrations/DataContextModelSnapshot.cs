@@ -30,7 +30,6 @@ namespace Models.Migrations
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("AccessToken")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<long>("CreateTime")
@@ -55,11 +54,9 @@ namespace Models.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Salt")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("ThumbnailUrl")
-                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("varchar(200)");
 

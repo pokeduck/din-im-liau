@@ -20,6 +20,8 @@ public class BasePageModel : PageModel
     private const string EmailKey = "Email";
     protected readonly AccountService _accountService;
     protected readonly HttpContext _httpContext;
+
+    private int Id => int.Parse(User.FindFirstValue("accountId"));
     public BasePageModel(IHttpContextAccessor httpContextAccessor)
     {
         _httpContext = httpContextAccessor.HttpContext!;
@@ -30,9 +32,20 @@ public class BasePageModel : PageModel
     {
         if (User.Identity?.IsAuthenticated ?? false)
         {
-            ViewData[IsLoggedInKey] = true;
-            ViewData[NickNameKey] = "NickName!!!";
-            ViewData[EmailKey] = "Email@email.com";
+            var account = await _accountService.GetByAccountId(Id);
+            if (account != null)
+            {
+
+                ViewData[IsLoggedInKey] = true;
+                ViewData[NickNameKey] = account.NickName;
+                ViewData[EmailKey] = account.Email;
+            }
+            else
+            {
+                ViewData[IsLoggedInKey] = false;
+                ViewData[NickNameKey] = null;
+                ViewData[EmailKey] = null;
+            }
         }
         else
         {

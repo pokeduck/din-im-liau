@@ -11,8 +11,8 @@ using Models.DataModels;
 namespace Models.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20240531091255_InitialData")]
-    partial class InitialData
+    [Migration("20240618174126_InitTables")]
+    partial class InitTables
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -33,7 +33,6 @@ namespace Models.Migrations
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("AccessToken")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<long>("CreateTime")
@@ -58,11 +57,9 @@ namespace Models.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Salt")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("ThumbnailUrl")
-                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("varchar(200)");
 

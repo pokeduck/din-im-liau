@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.ObjectPool;
 using Services.Helper;
 using Common.Extensions;
+using Services;
 
 namespace din_im_liau.Pages.Login;
 
@@ -51,14 +52,15 @@ public class GoogleViewModel
 public class GoogleModel : BasePageModel
 {
 
-    
+    private AccountService AccountService { get; set; }
 
     public GoogleViewModel GoogleViewModel { get; set; }
 
     private IConfiguration _config;
-    public GoogleModel(IConfiguration config, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
+    public GoogleModel(AccountService accountService, IConfiguration config, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
     {
         _config = config;
+        AccountService = accountService;
     }
     public async Task<IActionResult> OnGet([FromQuery] GoogleOAuthResponse response)
     {
@@ -97,7 +99,16 @@ public class GoogleModel : BasePageModel
             googleUserId = model.Sub ?? "",
             thumbnailUrl = model.Picture ?? ""
         };
-        await SignIn();
+        var lastAccount = await AccountService.Get(vm.googleUserId);
+        if (lastAccount == null)
+        {
+            var result = await AccountService.Create(vm.googleUserId, vm.fullName, vm.email, vm.thumbnailUrl);
+            await SignIn(result.GoogleOpenId, result.Id.ToString());
+        }
+        else {
+            await SignIn(lastAccount.GoogleOpenId, lastAccount.Id.ToString());
+        }
+        
         GoogleViewModel = vm;
 
         var directPage = new RedirectToPageResult("/user/profile");

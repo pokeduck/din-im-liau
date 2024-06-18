@@ -13,5 +13,17 @@ migration:
 
 .PHONY: migration
 
+
+mlist:
+	dotnet ef migrations list -s $(STARTUP_PATH) -p $(PROJECT_PATH) 
+
+.PHONY: migration
+
+rollback:
+	dotnet ef database update $(target) -s $(STARTUP_PATH) -p $(PROJECT_PATH) 
+
+.PHONY: migration
+
+
 page:
 	dotnet aspnet-codegenerator razorpage -p $(MAIN_PROJECT_PATH) -n $(STARTUP_PATH) -m Account -dc Models.DataModels.DataContext  -udl -outDir Pages/Account --referenceScriptLibraries --databaseProvider mysql

@@ -9,12 +9,12 @@ namespace Services;
 
 public class BaseService<T> where T : BaseDataModel
 {
-    public HttpContext _httpContext;
-    public IGenericRepository<T>? _repository;
+    protected readonly HttpContext HttpContext;
+    protected readonly IGenericRepository<T> Repository;
 
     public BaseService(IHttpContextAccessor contextAccessor)
     {
-        _httpContext = contextAccessor.HttpContext!;
-        _repository = _httpContext.RequestServices.GetService<IGenericRepository<T>>();
+        HttpContext = contextAccessor.HttpContext!;
+        Repository = HttpContext.RequestServices.GetService<IGenericRepository<T>>()!;
     }
 }

@@ -1,4 +1,11 @@
 ﻿@using din_im_liau.Pages.Components;
+@{
+  var isLoggedIn = (bool)(@ViewData["IsLoggedIn"] ?? false);
+  var userMenuStyle = isLoggedIn ? "" : "display:none;";
+  var userLoginStyle = isLoggedIn ? "display:none;" : "";
+  var nickName = @ViewData["NickName"] ?? "";
+  var email = @ViewData["Email"] ?? "";
+}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -20,39 +27,47 @@
         </a>
         <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
           <li>
-            <a asp-page="/Index" class=" nav-link px-2 link-secondary"> Home </a>
+            <a asp-page="/Order/Index" class=" nav-link px-2 link-secondary"> 我口渴了 </a>
           </li>
           <li>
-            <a asp-page="/User/Login" class=" nav-link px-2 link-secondary"> Login </a>
+            <a asp-page="/Privacy" class=" nav-link px-2 link-secondary"> 關於 </a>
           </li>
-          <li>
-            <a asp-page="/Privacy" class=" nav-link px-2 link-secondary"> Privacy </a>
-          </li>
+
         </ul>
         <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search">
           <input type="search" class="form-control" placeholder="Search..." aria-label="Search">
         </form>
-        <div class="dropdown-center text-end">
-          <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown"
-            aria-expanded="false">
-            <img src="~/assets/pokemon-logo.png" alt="pokemon" width="32" height="32" class="rounded-circle">
-          </a>
-          <ul class="dropdown-menu dropdown-menu-end text-small mt-2" style="">
-            <li>
-              <h6 class="dropdown-header">Your.example.example.mail@gmail.com</h6>
-            </li>
-            <p>
-            <h4 class="dropdown-item disabled text-dark">Your Name NickName</h4>
-            </p>
-            <li><a class="dropdown-item" href="#">Orders</a></li>
-            <li><a class="dropdown-item" href="#">Settings</a></li>
-            <li><a class="dropdown-item" asp-page="/User/Profile">Profile</a></li>
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-            <li><a class="dropdown-item" asp-page="/User/Logout">Sign out</a></li>
-          </ul>
-        </div>
+        @if (@isLoggedIn)
+        {
+          <div class="dropdown-center text-end" style=@userMenuStyle>
+            <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown"
+              aria-expanded="false">
+              <img src="~/assets/pokemon-logo.png" alt="pokemon" width="32" height="32" class="rounded-circle">
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end text-small mt-2" style="">
+              <li>
+                <h6 class="dropdown-header">@email</h6>
+              </li>
+              <p>
+              <h4 class="dropdown-item disabled text-dark">@nickName</h4>
+              </p>
+              <li><a class="dropdown-item" asp-page="/User/Orders">Orders</a></li>
+              <li><a class="dropdown-item" asp-page="/User/Profile">Profile</a></li>
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+              <li><a class="dropdown-item" asp-page="/User/Logout">Sign out</a></li>
+            </ul>
+          </div>
+        }
+        else
+        {
+          <div class="w-10" style=@userLoginStyle>
+            <a asp-page="/User/Login" class="nav-link px-2 link-secondary p-1  border border-secondary rounded">登入</a>
+          </div>
+        }
+
+
       </div>
 
 

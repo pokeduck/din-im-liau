@@ -1,28 +1,47 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Services;
 
 
 namespace din_im_liau.Events;
 public class CustomCookieAuthenticationEvents : CookieAuthenticationEvents
 {
-    //private readonly IUserRepository _userRepository;
+    private readonly AccountService _accountService;
 
-    // public CustomCookieAuthenticationEvents(IUserRepository userRepository)
-    // {
-    //     _userRepository = userRepository;
-    // }
+    public CustomCookieAuthenticationEvents(AccountService accountService)
+    {
+        _accountService = accountService;
+    }
 
-    public CustomCookieAuthenticationEvents() { }
 
     public override async Task ValidatePrincipal(CookieValidatePrincipalContext context)
     {
         var userPrincipal = context.Principal;
 
         // // Look for the LastChanged claim.
-        var lastChanged = (from c in userPrincipal.Claims
-                           where c.Type == "google"
-                           select c.Value).FirstOrDefault();
-        Console.WriteLine(lastChanged);
+        var googleId = (from c in userPrincipal.Claims
+                        where c.Type == "googleId"
+                        select c.Value).FirstOrDefault();
+        var accountId = (from c in userPrincipal.Claims
+                         where c.Type == "accountId"
+                         select c.Value).FirstOrDefault();
+        if (string.IsNullOrEmpty(googleId))
+        {
+            context.RejectPrincipal();
+            await context.HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return;
+        }
+
+
+        var lastAccount = await _accountService.Get(googleId);
+        if (lastAccount == null)
+        {
+            context.RejectPrincipal();
+            await context.HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return;
+        }
+
+        Console.WriteLine(lastAccount);
         // if (string.IsNullOrEmpty(lastChanged) ||
         //     !_userRepository.ValidateLastChanged(lastChanged))
         // {

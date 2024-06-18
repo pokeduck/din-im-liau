@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Services;
 
@@ -14,7 +15,9 @@ namespace din_im_liau.Page;
 [ValidateAntiForgeryToken]
 public class BasePageModel : PageModel
 {
-
+    private const string IsLoggedInKey = "IsLoggedIn";
+    private const string NickNameKey = "NickName";
+    private const string EmailKey = "Email";
     protected readonly AccountService _accountService;
     protected readonly HttpContext _httpContext;
     public BasePageModel(IHttpContextAccessor httpContextAccessor)
@@ -23,10 +26,31 @@ public class BasePageModel : PageModel
         _accountService = _httpContext.RequestServices.GetRequiredService<AccountService>();
     }
 
-    protected async Task SignIn()
+    public override async Task OnPageHandlerExecutionAsync(PageHandlerExecutingContext context, PageHandlerExecutionDelegate next)
+    {
+        if (User.Identity?.IsAuthenticated ?? false)
+        {
+            ViewData[IsLoggedInKey] = true;
+            ViewData[NickNameKey] = "NickName!!!";
+            ViewData[EmailKey] = "Email@email.com";
+        }
+        else
+        {
+            ViewData[IsLoggedInKey] = false;
+            ViewData[NickNameKey] = null;
+            ViewData[EmailKey] = null;
+        }
+        await base.OnPageHandlerExecutionAsync(context, next);
+    }
+
+
+    protected async Task SignIn(string googleUserId, string accountId)
     {
 
-        var claims = new List<Claim> { new Claim("google", "id") };
+        var claims = new List<Claim> {
+             new Claim("googleId", googleUserId) ,
+             new Claim("accountId", accountId),
+             };
 
         var identity = new ClaimsIdentity(
             claims,

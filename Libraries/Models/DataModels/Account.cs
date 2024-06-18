@@ -26,10 +26,9 @@ public class Account : BaseDataModel, IUpdateEntity, ICreateEntity
     public string GoogleOpenId { get; set; }
 
 
-    [Required]
+    
     public string AccessToken { get; set; }
 
-    [Required]
     public string Salt { get; set; }
 
     [Required]

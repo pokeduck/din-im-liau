@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Models.DataModels;
 using Services;
 
 namespace din_im_liau.Page;
@@ -18,6 +19,8 @@ public class BasePageModel : PageModel
     private const string IsLoggedInKey = "IsLoggedIn";
     private const string NickNameKey = "NickName";
     private const string EmailKey = "Email";
+
+    protected Account? Account { get; set; }
     protected readonly AccountService _accountService;
     protected readonly HttpContext _httpContext;
 
@@ -33,6 +36,7 @@ public class BasePageModel : PageModel
         if (User.Identity?.IsAuthenticated ?? false)
         {
             var account = await _accountService.GetByAccountId(Id);
+            Account = account;
             if (account != null)
             {
 

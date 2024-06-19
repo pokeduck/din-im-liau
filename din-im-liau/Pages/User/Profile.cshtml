@@ -2,19 +2,25 @@
 @model din_im_liau.Pages.User.ProfileModel;
 
 @{
-  @* ViewData["Title"] = Model.GoogleViewModel.fullName; *@
+  ViewData["Title"] = "會員資料";
+
 
 }
 <div class="text-left">
 
   Profile!
-  <form>
+  <form method="post">
     <fieldset>
       <legend>Disabled fieldset example</legend>
       <div class="mb-3">
         <label for="disabledTextInput" class="form-label">Email</label>
         <input type="text" id="disabledTextInput" class="form-control" placeholder="Disabled input"
-          value="Example@gmail.com" disabled>
+          value="@Model.ProfileVM.Email" disabled>
+      </div>
+      <div class="mb-3">
+        <label for="disabledTextInput" class="form-label">NickName</label>
+        <input type="text" id="disabledTextInput" class="form-control" placeholder="Disabled input"
+          value="@Model.ProfileVM.NickName">
       </div>
       <div class="mb-3">
         <label for="disabledSelect" class="form-label">Disabled select menu</label>

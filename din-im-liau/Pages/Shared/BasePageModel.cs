@@ -7,7 +7,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Models.DataModels;
+using NUglify.Helpers;
+using NUglify.JavaScript.Syntax;
 using Services;
 
 namespace din_im_liau.Page;
@@ -24,7 +27,11 @@ public class BasePageModel : PageModel
     protected readonly AccountService _accountService;
     protected readonly HttpContext _httpContext;
 
-    private int Id => int.Parse(User.FindFirstValue("accountId"));
+    protected int Id => int.Parse(User.FindFirstValue("accountId"));
+
+    protected void IgnoreFieldValidation(string key) => ModelState.Where(x => x.Key.Contains(key)).ForEach(x => ModelState.Remove(x.Key));
+
+    protected bool IsValidField(string key) => ModelState.GetFieldValidationState(key) == Microsoft.AspNetCore.Mvc.ModelBinding.ModelValidationState.Valid;
     public BasePageModel(IHttpContextAccessor httpContextAccessor)
     {
         _httpContext = httpContextAccessor.HttpContext!;

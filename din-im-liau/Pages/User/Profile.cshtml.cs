@@ -1,8 +1,11 @@
 
 using System.ComponentModel.DataAnnotations;
+using System.Globalization;
+using Amazon;
 using din_im_liau.Page;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Models.DataModels;
 using NUglify.JavaScript.Syntax;
@@ -17,7 +20,7 @@ public class ProfileVM
     [Display(Name = "Email 位址")]
     public string Email { get; set; }
     [Required]
-    [StringLength(100, ErrorMessage = "AAAAA")]
+    [StringLength(50, ErrorMessage = "長度太長")]
     [Display(Name = "您的暱稱")]
     public string NickName { get; set; }
 }
@@ -27,26 +30,38 @@ public class ProfileModel : BasePageModel
     public ProfileVM ProfileVM { get; set; }
     public ProfileModel(IHttpContextAccessor accessor) : base(accessor) { }
 
-    public async Task<IActionResult> OnGet()
+    public async Task OnGet()
     {
+
         ProfileVM = new ProfileVM
         {
             Email = Account?.Email ?? "",
             NickName = Account?.NickName ?? "",
             Id = Account?.Id ?? 0
         };
-        return Page();
+        Console.WriteLine(ProfileVM.Id);
     }
 
     public async Task<IActionResult> OnPost()
     {
-        // if (!ModelState.IsValid)
+        // IgnoreFieldValidation(nameof(ProfileVM.Email));
+        // foreach (var k in ModelState.Keys)
         // {
-        //     return Page();
+        //     var v = ModelState[k];
+        //     Console.WriteLine($"{k}");
         // }
+        // var page = Page();
+        // page.Page.BadRequest
+        if (!ModelState.IsValid)
+        {
+            return Page();
+        }
+        // ModelState.Add("", "");
+        // ModelState.AddModelError("ProfileVM.NickName", "Wrong!");
+        // return Page(new {});
         if (Account != null)
         {
-            await _accountService.UpdateNickName(Account.Id, ProfileVM.NickName);
+            await _accountService.UpdateNickName(ProfileVM.Id, ProfileVM.NickName);
             return RedirectToPage("index");
 
         }

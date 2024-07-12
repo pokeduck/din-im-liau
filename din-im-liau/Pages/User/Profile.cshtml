@@ -3,26 +3,40 @@
 
 @{
   ViewData["Title"] = "會員資料";
-
+  
 
 }
 <div class="text-left">
 
-  Profile!
-  <form method="post">
+  <form method="post" enctype="multipart/form-data">
     <fieldset>
-      <legend>資料設定</legend>
-      @Html.HiddenFor(model => model.ProfileVM.Id)
-      @Html.HiddenFor(model => model.ProfileVM.Email)
+      <legend>使用者資料設定</legend>
+      @* @Html.HiddenFor(model => model.ProfileVM.Email) *@
       <div class="mb-3">
-        <label asp-for=@Model.ProfileVM.Email class="form-label"></label>
-        <input value="@Model.ProfileVM.Email" class="form-control" disabled>
-        @* <input asp-for=@Model.ProfileVM.Email class="form-control" disabled> *@
+        <div>
+            <div class="justify-content-center mb-4">
+                <img id="selectedAvatar" src="@Model.ProfileVM.AvatarUrl"
+                class="rounded-circle" style="width: 150px; height: 150px; object-fit: cover;" alt="example placeholder" />
+            </div>
+            <div class="justify-content-center">
+                <div data-mdb-ripple-init class="btn btn-primary btn-rounded">
+                    <label class="form-label text-white m-1" for="customFile2">選擇圖片</label>
+                    <input type="file" asp-for="@Model.Upload" class="form-control d-none" id="customFile2" onchange="displaySelectedImage(event, 'selectedAvatar')" />
+                </div>
+            </div>
+        </div>
+      </div>
+      <div class="mb-3">
+        <label asp-for=ProfileVM.Email class="form-label"></label>
+        <input asp-for="ProfileVM.Email" class="form-control" disabled>
         @Html.ValidationMessageFor(model => model.ProfileVM.Email, "", new { @class = "text-danger" })
       </div>
       <div class="mb-3">
         <label asp-for=@Model.ProfileVM.NickName class="form-label"></label>
-        <input asp-for=@Model.ProfileVM.NickName class="form-control">
+        @* <input asp-for=@Model.ProfileVM.NickName placeholder="@Html.DisplayNameFor(m => m.ProfileVM.NickName)"
+          class="form-control"> *@
+
+        @Html.TextBoxFor(m => m.ProfileVM.NickName, new { @class = "form-control", placeholder = "@Html.DisplayNameFor(m => m.ProfileVM.NickName)" })
         @Html.ValidationMessageFor(model => model.ProfileVM.NickName, "", new { @class = "text-danger" })
 
       </div>
@@ -62,7 +76,21 @@
 </div> *@
 
 @section Scripts {
-  <script>
-    console.log('profile');
-  </script>
+    <script>
+      console.log('profile');
+        function displaySelectedImage(event, elementId) {
+        const selectedImage = document.getElementById(elementId);
+        const fileInput = event.target;
+
+        if (fileInput.files && fileInput.files[0]) {
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                selectedImage.src = e.target.result;
+            };
+
+            reader.readAsDataURL(fileInput.files[0]);
+        }
+      }
+    </script>
 }

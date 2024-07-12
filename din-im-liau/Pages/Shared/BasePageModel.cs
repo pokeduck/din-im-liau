@@ -98,4 +98,11 @@ public class BasePageModel : PageModel
     {
         await _httpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
     }
+
+    protected RedirectToPageResult RedirectToIndexPage()
+    {
+        return RedirectToPage("index");
+    }
+
+
 }

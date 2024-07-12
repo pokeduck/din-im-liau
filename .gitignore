@@ -1,3 +1,6 @@
+# upload files
+uploads/
+
 *.swp
 *.*~
 project.lock.json

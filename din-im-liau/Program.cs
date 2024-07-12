@@ -10,6 +10,7 @@ using Amazon.S3;
 using Models.Repositories;
 using Services;
 using Scrutor;
+using Microsoft.Extensions.FileProviders;
 try
 {
     var builder = WebApplication.CreateBuilder(args);
@@ -92,6 +93,7 @@ try
     }
 
     app.UseHttpsRedirection();
+    app.UseDefaultFiles();
     app.UseStaticFiles();
 
     app.UseRouting();

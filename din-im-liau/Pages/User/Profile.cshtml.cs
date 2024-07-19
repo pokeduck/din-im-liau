@@ -57,10 +57,12 @@ public class ProfileModel : BasePageModel
 
     public async Task<IActionResult> OnPostAsync()
     {
-
+        Console.WriteLine("sss");
+        Console.WriteLine("sss");
         // var folderName = "uploads";
         // var fileExtension = Path.GetExtension(Upload.FileName);
-
+        var test = new List<IFormFile>();
+        var size = test.Sum(f => f.Length);
 
         Stream st = Upload.OpenReadStream();
         MemoryStream mst = new MemoryStream();

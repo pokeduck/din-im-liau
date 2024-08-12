@@ -67,14 +67,26 @@ public class ProfileModel : BasePageModel
         Stream st = Upload.OpenReadStream();
         MemoryStream mst = new MemoryStream();
         st.CopyTo(mst);
-        var md5 = ToMD5Hash(mst.ToArray());
-        Console.WriteLine($"md5:{md5}");
-        // var photoUrl = "localhost:8888/localhost"
+        var hashValue = HashHelper.Generate(mst.ToArray());
 
-        var file = Path.Combine(_environment.ContentRootPath, "uploads", Upload.FileName);
-        using (var fileStream = new FileStream(file, FileMode.Create))
+        Console.WriteLine($"hash:{hashValue}");
+        // var photoUrl = "localhost:8888/localhost"
+        var ext = System.IO.Path.GetExtension(Upload.FileName);
+        var file = Path.Combine(_environment.ContentRootPath, "uploads", $"{hashValue}{ext}");
+        var thumbnailPath = Path.Combine("/","uploads", $"{hashValue}{ext}");
+
+        if (System.IO.File.Exists(file))
         {
-            await Upload.CopyToAsync(fileStream);
+            Console.WriteLine("Exist!");
+        }
+        else
+        {
+            Console.WriteLine("Create!");
+            using (var fileStream = new FileStream(file, FileMode.Create))
+            {
+                await Upload.CopyToAsync(fileStream);
+            }
+
         }
 
         IgnoreFieldValidation(nameof(ProfileVM.Email));
@@ -91,7 +103,7 @@ public class ProfileModel : BasePageModel
         if (!ModelState.IsValid)
         {
             ProfileVM.Email = Account.Email;
-            ProfileVM.AvatarUrl = Account?.ThumbnailUrl ?? "https://localhost:8888/assets/profile-placeholder.png";
+            ProfileVM.AvatarUrl = Account?.ThumbnailUrl ?? $"https://localhost:8888{thumbnailPath}";
             return Page();
         }
         // ModelState.Add("", "");
@@ -106,17 +118,6 @@ public class ProfileModel : BasePageModel
         else
         {
             return Page();
-        }
-    }
-
-    public static string ToMD5Hash(byte[] bytes)
-    {
-        if (bytes == null || bytes.Length == 0)
-            return null;
-
-        using (var md5 = SHA256.Create())
-        {
-            return string.Join("", md5.ComputeHash(bytes).Select(x => x.ToString("x2")));
         }
     }
 

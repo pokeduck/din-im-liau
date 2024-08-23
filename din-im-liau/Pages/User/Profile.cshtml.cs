@@ -73,7 +73,7 @@ public class ProfileModel : BasePageModel
         // var photoUrl = "localhost:8888/localhost"
         var ext = System.IO.Path.GetExtension(Upload.FileName);
         var file = Path.Combine(_environment.ContentRootPath, "uploads", $"{hashValue}{ext}");
-        var thumbnailPath = Path.Combine("/","uploads", $"{hashValue}{ext}");
+        var thumbnailPath = Path.Combine("/", "uploads", $"{hashValue}{ext}");
 
         if (System.IO.File.Exists(file))
         {

@@ -19,6 +19,12 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Diagnostics;
 using din_im_liau.Middlewares;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authorization;
+using System.Text;
+using System.Text.Json;
+using System.Text.Encodings.Web;
 try
 {
     var builder = WebApplication.CreateBuilder(args);
@@ -43,7 +49,29 @@ try
         options.LowercaseQueryStrings = true;
     });
 
-    builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(opt =>
+    builder.Services.AddAuthentication(config =>
+    {
+        config.DefaultScheme = "smart";
+        config.DefaultChallengeScheme = "smart";
+    })
+    .AddPolicyScheme("smart", "Bearer or Jwt", options =>
+    {
+        options.ForwardDefaultSelector = context =>
+        {
+            //var bearerAuth = context.Request.Headers["Authorization"].FirstOrDefault()?.StartsWith("Bearer ") ?? false;
+            // You could also check for the actual path here if that's your requirement:
+            // eg: if (context.HttpContext.Request.Path.StartsWithSegments("/api", StringComparison.InvariantCulture))
+            if (context.Request.Headers["Accept"].ToString() == "application/json")
+            {
+                return JwtBearerDefaults.AuthenticationScheme;
+            }
+            else
+            {
+                return CookieAuthenticationDefaults.AuthenticationScheme;
+            }
+        };
+    })
+    .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, opt =>
     {
         opt.Cookie.Name = "dim_in_liau_oauth_token";
         opt.ExpireTimeSpan = TimeSpan.FromMinutes(60);
@@ -51,7 +79,73 @@ try
         opt.LogoutPath = "/";
         opt.AccessDeniedPath = "/error/401";
         opt.EventsType = typeof(CustomCookieAuthenticationEvents);
+    })
+    .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
+    {
+        options.RequireHttpsMetadata = false;
+        options.SaveToken = true;
+        options.IncludeErrorDetails = true;
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            // 透過這項宣告，就可以從 "sub" 取值並設定給 User.Identity.Name
+            NameClaimType = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier",
+            // 透過這項宣告，就可以從 "roles" 取值，並可讓 [Authorize] 判斷角色
+            RoleClaimType = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role",
+
+            // 一般我們都會驗證 Issuer
+            ValidateIssuer = true,
+            ValidIssuer = "drink",
+
+            // 通常不太需要驗證 Audience
+            ValidateAudience = false,
+            //ValidAudience = "JwtAuthDemo", // 不驗證就不需要填寫
+
+            // 一般我們都會驗證 Token 的有效期間
+            ValidateLifetime = true,
+
+            // 如果 Token 中包含 key 才需要驗證，一般都只有簽章而已
+            ValidateIssuerSigningKey = false,
+
+            // "1234567890123456" 應該從 IConfiguration 取得
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("5nI8s5Y9fJ7vL9vE8sK9lX3oJ6hW2xR5kV8dT3sP4aN0zQ7rU1oD2mX8vY3sH1pG"))
+        };
+        options.Events = new JwtBearerEvents
+        {
+            OnChallenge = async context =>
+            {
+                // Call this to skip the default logic and avoid using the default response
+                context.HandleResponse();
+
+                
+
+                var statusCode = 401;
+                var message = "You are not authorized!";
+                var errorCode = 401;
+                var jsonSerializerOptions = new JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
+                    WriteIndented = true,
+                    Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+                };
+
+                var response = JsonSerializer.Serialize(new { ErrorCode = errorCode, ErrorMessage = message }, jsonSerializerOptions);
+
+                context.Response.ContentType = "application/json";
+                context.Response.StatusCode = statusCode;
+                await context.Response.WriteAsync(response);
+            }
+        };
     });
+
+    builder.Services.AddAuthorization(options =>
+    {
+        options.DefaultPolicy = new AuthorizationPolicyBuilder(
+            CookieAuthenticationDefaults.AuthenticationScheme,
+            JwtBearerDefaults.AuthenticationScheme)
+            .RequireAuthenticatedUser()
+            .Build();
+    });
+
     builder.Services.AddScoped<CustomCookieAuthenticationEvents>();
 
 
@@ -90,6 +184,7 @@ try
     builder.Services.AddControllers(options =>
     {
         options.Filters.Add(typeof(ErrorMessageFilter));
+        options.Filters.Add(typeof(BearerJwtFilter));
     })
     .ConfigureApiBehaviorOptions(options =>
     {

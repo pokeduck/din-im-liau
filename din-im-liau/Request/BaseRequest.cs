@@ -1,14 +1,14 @@
 using System.ComponentModel.DataAnnotations;
 
 namespace din_im_liau.Request;
-
 #nullable disable warnings
 
-public class LoginRequest
+public class BaseConditionRequest
 {
     [Required]
-    public string Account { get; set; }
+    public int? Offset { get; set; }
 
     [Required]
-    public string Password { get; set; }
+
+    public int? PageSize { get; set; }
 }

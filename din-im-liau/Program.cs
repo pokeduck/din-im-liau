@@ -25,6 +25,12 @@ using Microsoft.AspNetCore.Authorization;
 using System.Text;
 using System.Text.Json;
 using System.Text.Encodings.Web;
+using Microsoft.OpenApi.Models;
+using System.Reflection;
+using System.Security.Cryptography.Xml;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Swashbuckle.AspNetCore.SwaggerGen;
+using Asp.Versioning.ApiExplorer;
 try
 {
     var builder = WebApplication.CreateBuilder(args);
@@ -235,7 +241,11 @@ try
             opt.AssumeDefaultVersionWhenUnspecified = true;
             opt.DefaultApiVersion = new ApiVersion(1, 0);
         }
-    );
+    ).AddApiExplorer(options =>
+    {
+        options.GroupNameFormat = "'v'VVV";
+        options.SubstituteApiVersionInUrl = true;
+    });
 
     // builder.Services.AddVersionedApiExplorer(options =>
     // {
@@ -247,12 +257,64 @@ try
     //     // can also be used to control the format of the API version in route templates
     //     options.SubstituteApiVersionInUrl = true;
     // });
-
+    //services.AddSingleton<IConfigureOptions<SwaggerGenOptions>, ConfigureApiVersionSwaggerGenOptions>();
+    builder.Services.AddEndpointsApiExplorer();
     // builder.Services.AddHttpsRedirection(options =>
     // {
     //     options.RedirectStatusCode = StatusCodes.Status307TemporaryRedirect;
     //     options.HttpsPort = 7017;
     // });
+
+    builder.Services.AddSwaggerGen(options =>
+    {
+        options.SwaggerDoc("v1", new OpenApiInfo
+        {
+            Version = "v1",
+            Title = "Din In Liau",
+            Description = "API Doc",
+            TermsOfService = new Uri("https://google.com.tw"),
+            Contact = new OpenApiContact
+            {
+                Name = "BBB",
+                Email = "BBB@dindin.tw",
+                Url = new Uri("https://githib.com")
+            }
+        });
+
+
+
+        options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+        {
+            Name = "Authorization",
+            Type = SecuritySchemeType.ApiKey,
+            Scheme = "Bearer",
+            BearerFormat = "JWT",
+            In = ParameterLocation.Header,
+            Description = "JWT Desc."
+        });
+
+        options.UseInlineDefinitionsForEnums();
+        options.EnableAnnotations();
+
+        options.AddSecurityRequirement(new OpenApiSecurityRequirement
+        {
+            {
+                new OpenApiSecurityScheme {
+                    Reference = new OpenApiReference {
+                        Type = ReferenceType.SecurityScheme,
+                        Id = "Bearer"
+                    }
+                },
+                Array.Empty<string>()
+            }
+        });
+
+
+        // 讀取每一隻API註解的說明內容
+        var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+        var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+        options.IncludeXmlComments(xmlPath);
+    });
 
     var app = builder.Build();
 
@@ -272,7 +334,8 @@ try
     if (app.Environment.IsDevelopment())
     {
         app.UseExceptionHandler("/error-development");
-
+        app.UseSwagger();
+        app.UseSwaggerUI();
     }
     else
     {
@@ -295,6 +358,11 @@ try
 
     app.MapRazorPages();
     app.MapControllers();
+
+    // app.UseEndpoints(endpoints =>
+    //     endpoints.Map("/", context => Task.Run(() => context.Response.Redirect("/swagger/index.html")))
+    // );
+
     app.Run();
 
     return 0;

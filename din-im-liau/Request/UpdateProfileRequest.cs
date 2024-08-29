@@ -1,14 +1,13 @@
+
 using System.ComponentModel.DataAnnotations;
 
 namespace din_im_liau.Request;
 
 #nullable disable warnings
 
-public class LoginRequest
+public class UpdateProfileRequest
 {
     [Required]
-    public string Account { get; set; }
+    public string Name { get; set; }
 
-    [Required]
-    public string Password { get; set; }
 }

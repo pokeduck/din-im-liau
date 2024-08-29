@@ -93,7 +93,7 @@ try
             RoleClaimType = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role",
 
             // 一般我們都會驗證 Issuer
-            ValidateIssuer = true,
+            ValidateIssuer = false,
             ValidIssuer = "drink",
 
             // 通常不太需要驗證 Audience
@@ -115,11 +115,22 @@ try
             {
                 // Call this to skip the default logic and avoid using the default response
                 context.HandleResponse();
-
-                
-
+                var message = "";
+                var bearerToken = context.HttpContext.Request.Headers["Authorization"].ToString();
+                if (string.IsNullOrWhiteSpace(bearerToken))
+                {
+                    message = "You need a Bearer token.";
+                }
+                else if (bearerToken.Contains("Bearer"))
+                {
+                    message = "The token is invalid.";
+                }
+                else
+                {
+                    message = "You are not authorized!";
+                }
                 var statusCode = 401;
-                var message = "You are not authorized!";
+
                 var errorCode = 401;
                 var jsonSerializerOptions = new JsonSerializerOptions
                 {
@@ -133,7 +144,12 @@ try
                 context.Response.ContentType = "application/json";
                 context.Response.StatusCode = statusCode;
                 await context.Response.WriteAsync(response);
-            }
+            },
+            OnAuthenticationFailed = context =>
+            {
+                context.Fail("You are no authorized!!!!");
+                return Task.CompletedTask;
+            },
         };
     });
 

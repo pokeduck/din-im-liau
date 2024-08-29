@@ -17,16 +17,16 @@ public class AuthController : BaseController
     }
 
     [HttpPost("refresh")]
-    public async Task<IActionResult> Refresh(string refreshToken)
+    public async Task<IActionResult> Refresh([FromBody] AuthRefreshRequest token)
     {
-        return Ok(refreshToken);
+        return Ok(new { refreshToken = token });
     }
 
 
     [HttpPost("logout")]
     public async Task<IActionResult> Logout()
     {
-        return Ok();
+        return Ok(Account);
     }
 
     [AllowAnonymous]
@@ -38,6 +38,27 @@ public class AuthController : BaseController
         //return new BadRequestResult();
         //return Ok(register);
     }
+
+    [HttpPost("forgot-password")]
+    public async Task<IActionResult> ForgotPassword()
+    {
+        return Ok();
+    }
+
+    [HttpPost("reset-password")]
+    public async Task<IActionResult> ResetPassword()
+    {
+        return Ok();
+    }
+
+    [HttpGet("email-verification")]
+    public async Task<IActionResult> EmailVerification([FromQuery] string token)
+    {
+        return Ok(new { token = token });
+    }
+
+
+
 
 }
 

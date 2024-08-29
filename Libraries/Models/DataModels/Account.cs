@@ -3,6 +3,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.Serialization;
 using Models.ViewModels;
 
 #nullable disable warnings
@@ -16,6 +17,7 @@ public class Account : BaseDataModel, IUpdateEntity, ICreateEntity
     [MaxLength(length: 50)]
     public string Email { get; set; }
 
+    [DataMember(Order = 1)]
     [MaxLength(length: 50)]
     public string NickName { get; set; }
     [MaxLength(length: 200)]

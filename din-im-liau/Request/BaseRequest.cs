@@ -1,14 +1,23 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace din_im_liau.Request;
+
 #nullable disable warnings
-
-public class BaseConditionRequest
+namespace din_im_liau.Request
 {
-    [Required]
-    public int? Offset { get; set; }
+    public class BaseConditionRequest
+    {
+        [Required]
+        public int? Offset { get; set; }
 
-    [Required]
+        [Required]
 
-    public int? PageSize { get; set; }
+        public int? PageSize { get; set; }
+    }
+
+    public class BaseIdRequest
+    {
+        [Required]
+        public int? Id { get; set; }
+    }
+
 }

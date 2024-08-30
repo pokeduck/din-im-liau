@@ -101,6 +101,16 @@ public class AuthController : BaseController
     }
 
     /// <summary>
+    /// 發送驗證email
+    /// </summary>
+    /// <returns></returns>
+    [HttpPost("verify-email")]
+    public async Task<IActionResult> SendVerifyEmail() {
+        return Ok();
+    }
+
+
+    /// <summary>
     ///  驗證 google 登入 token
     /// </summary>
     /// <param name="token">google token</param>

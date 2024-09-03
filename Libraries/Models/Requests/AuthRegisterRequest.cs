@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
-using din_im_liau.Attributes;
+using Models.Attributes;
 
-namespace din_im_liau.Request;
+namespace Models.Requests;
 
 #nullable disable warnings
 public class AuthRegisterRequest

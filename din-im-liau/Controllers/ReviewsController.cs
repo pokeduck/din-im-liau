@@ -1,5 +1,5 @@
 
-using din_im_liau.Request;
+using Models.Requests;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 

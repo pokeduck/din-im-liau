@@ -1,11 +1,11 @@
-using din_im_liau.Request;
+using Models.Requests;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace din_im_liau.Controllers;
 
 
-[SwaggerTag("店家")]
+[SwaggerTag("")]
 public class ShopController : BaseController
 {
 

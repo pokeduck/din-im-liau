@@ -1,5 +1,6 @@
 
-using din_im_liau.Request;
+using Models.Attributes;
+using Models.Requests;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -71,6 +72,7 @@ public class OrderController : BaseController
     /// <param name="request">團購單名稱</param>
     /// <returns></returns>
     [HttpDelete("delete")]
+    [SwaggerSuccessResponse]
     public async Task<IActionResult> Delete([FromBody] BaseIdRequest request)
     {
         return Ok(new { request });
@@ -82,6 +84,7 @@ public class OrderController : BaseController
     /// <param name="request">飲料</param>
     /// <returns></returns>
     [HttpDelete("record/remove")]
+    [SwaggerSuccessResponse]
     public async Task<IActionResult> RemoveRecord([FromBody] BaseIdRequest request)
     {
         return Ok(new { request });

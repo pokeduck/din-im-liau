@@ -1,5 +1,9 @@
-using din_im_liau.Request;
+using Models.Attributes;
+using Models.Requests;
 using Microsoft.AspNetCore.Mvc;
+using Models.DTOs;
+using Models.Responses;
+using Services;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace din_im_liau.Controllers;
@@ -8,6 +12,13 @@ namespace din_im_liau.Controllers;
 [SwaggerTag("會員")]
 public class UserController : BaseController
 {
+
+    private readonly AccountService AccountService;
+
+    public UserController(AccountService accountService)
+    {
+        AccountService = accountService;
+    }
     /// <summary>
     /// 會員資料 by id
     /// </summary>
@@ -25,6 +36,7 @@ public class UserController : BaseController
     /// </summary>
     /// <returns></returns>
     [HttpGet("profile")]
+    [SwaggerSuccessResponse(typeof(GenericResponse<AccountDTO>))]
     public async Task<IActionResult> Profile()
     {
 
@@ -37,6 +49,7 @@ public class UserController : BaseController
     /// <param name="body">會員內容</param>
     /// <returns></returns>
     [HttpPut("profile")]
+    [SwaggerSuccessResponse(typeof(GenericResponse<AccountDTO>))]
     public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileRequest body)
     {
 

@@ -1,7 +1,7 @@
 
 using System.ComponentModel.DataAnnotations;
 
-namespace din_im_liau.Request;
+namespace Models.Requests;
 
 public class ShopSearchRequest : BaseConditionRequest
 {

@@ -4,7 +4,7 @@ using Common.Helper;
 using Microsoft.IdentityModel.Tokens;
 using Models.DataModels;
 
-namespace din_im_liau.Attributes;
+namespace Models.Attributes;
 
 public class EmailRequiredAttribute : RequiredAttribute
 {

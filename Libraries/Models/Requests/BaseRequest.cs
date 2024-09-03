@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 
 #nullable disable warnings
-namespace din_im_liau.Request
+namespace Models.Requests
 {
     public class BaseConditionRequest
     {

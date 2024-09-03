@@ -1,4 +1,4 @@
-using din_im_liau.Request;
+using Models.Requests;
 using FluentValidation;
 
 public class AuthRegisterValidator : AbstractValidator<AuthRegisterRequest>

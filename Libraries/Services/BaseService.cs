@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Models.DataModels;
 using Models.Repositories;
+using Services.Extensions;
 
 namespace Services;
 
@@ -11,6 +12,8 @@ public class BaseService<T> where T : BaseDataModel
 {
     protected readonly HttpContext HttpContext;
     protected readonly IGenericRepository<T> Repository;
+
+    protected Account Account => HttpContext.GetAccount();
 
     public BaseService(IHttpContextAccessor contextAccessor)
     {

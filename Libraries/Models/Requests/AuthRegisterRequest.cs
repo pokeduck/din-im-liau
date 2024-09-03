@@ -6,17 +6,19 @@ namespace Models.Requests;
 #nullable disable warnings
 public class AuthRegisterRequest
 {
+
+
+    [EmailRequired]
+    public string? Email { get; set; }
+
     [Required(ErrorMessage = "Require Username")]
-    public string Username { get; set; }
+    [MaxLength(length: 20)]
+    public string? Username { get; set; }
 
     [Required(ErrorMessage = "Require Username")]
     public string? Password { get; set; }
 
-    [Required]
-    public EmailLayer2? Email { get; set; }
 
-    [Required(ErrorMessage = "Require Account")]
-    public string? Account { get; set; }
 }
 
 public class EmailLayer2

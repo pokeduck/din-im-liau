@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
 using Models.ViewModels;
+using System.ComponentModel;
 
 #nullable disable warnings
 
@@ -27,9 +28,13 @@ public class Account : BaseDataModel, IUpdateEntity, ICreateEntity
 
     [Required]
     [MaxLength(length: 50)]
+    [DefaultValue("")]
     public string GoogleOpenId { get; set; }
 
     public int PermissionId { get; set; }
+
+    [DefaultValue(0)]
+    public int EmailValidStatus { get; set; }
 
     public string? AccessToken { get; set; }
 

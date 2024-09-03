@@ -2,6 +2,11 @@ using Models.Requests;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using Services;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Models.Attributes;
+using Models.Responses;
+using Models.DTOs;
 
 namespace din_im_liau.Controllers;
 
@@ -11,6 +16,13 @@ namespace din_im_liau.Controllers;
 [SwaggerTag("驗證")]
 public class AuthController : BaseController
 {
+
+    private AccountService AccountService;
+
+    public AuthController(AccountService accountService)
+    {
+        AccountService = accountService;
+    }
 
     /// <summary>
     /// 登入
@@ -54,11 +66,23 @@ public class AuthController : BaseController
     /// <returns></returns>
     [AllowAnonymous]
     [HttpPost("register")]
-    public async Task<IActionResult> Register([FromBody] AuthRegisterRequest register)
+    [SwaggerSuccessResponse(typeof(GenericResponse<AccountDTO>))]
+    public async Task<IActionResult> Register([FromBody] AuthRegisterRequest request)
     {
+        var username = request.Username;
+        var email = request.Email;
+        if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(email))
+        {
+            return BadRequest();
+        }
+
+        var account = await AccountService.Create("", username, email, "");
+        var isEmailValid = (account.EmailValidStatus == 0) ? false : true;
+
+        return Ok(new AccountDTO { IsEmailValid = isEmailValid, NickName = account.NickName, Uid = account.Id });
         //throw new NotImplementedException("Exception Test 01");
         //return new BadRequestResult();
-        return Ok(register);
+
     }
 
 
@@ -105,7 +129,8 @@ public class AuthController : BaseController
     /// </summary>
     /// <returns></returns>
     [HttpPost("verify-email")]
-    public async Task<IActionResult> SendVerifyEmail() {
+    public async Task<IActionResult> SendVerifyEmail()
+    {
         return Ok();
     }
 

@@ -19,7 +19,8 @@ public class AccountService : BaseService<Account>
 
     public async Task<Account?> Get(string googleId)
     {
-        var account = awit Repository.ReadFirst(x => x.GoogleOpenId == googleId);
+        var account = await Repository.ReadFirst(x => x.GoogleOpenId == googleId);
+        
         return account;
     }
 

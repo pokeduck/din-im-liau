@@ -39,7 +39,6 @@ public class UserController : BaseController
     [SwaggerSuccessResponse(typeof(GenericResponse<AccountDTO>))]
     public async Task<IActionResult> Profile()
     {
-
         return Ok(Account);
     }
 

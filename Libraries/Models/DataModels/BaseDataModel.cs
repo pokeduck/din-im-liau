@@ -8,7 +8,6 @@ namespace Models.DataModels
     public class BaseDataModel
     {
         [Key]
-        [DataMember(Order = 0)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public virtual int Id { get; set; }
     }

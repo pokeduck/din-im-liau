@@ -31,6 +31,7 @@ public interface IGenericRepository<TEntity> where TEntity : BaseDataModel
             bool asNoTracking = true
             );
 
+
     public Task Update(TEntity entity, bool saveImediately = true);
 
     public Task Delete(TEntity entity, bool saveImediately = true);

@@ -14,7 +14,6 @@ using Microsoft.Extensions.FileProviders;
 using Asp.Versioning;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json.Serialization;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Diagnostics;
@@ -314,6 +313,9 @@ try
         var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
         var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
         options.IncludeXmlComments(xmlPath);
+
+        options.OrderActionsBy(api => api.RelativePath);
+        options.SchemaFilter<SwaggerOrderSchemaFilter>();
     });
 
     var app = builder.Build();

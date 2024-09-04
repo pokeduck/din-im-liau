@@ -79,7 +79,7 @@ public class AuthController : BaseController
         var account = await AccountService.Create("", username, email, "");
         var isEmailValid = (account.EmailValidStatus == 0) ? false : true;
 
-        return Ok(new AccountDTO { IsEmailValid = isEmailValid, NickName = account.NickName, Uid = account.Id });
+        return Ok(new AccountDTO { IsEmailVerified = isEmailValid, NickName = account.NickName, Uid = account.Id });
         //throw new NotImplementedException("Exception Test 01");
         //return new BadRequestResult();
 

@@ -2,6 +2,7 @@ using System.Net;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using Microsoft.AspNetCore.Http;
+using Models.Exceptions;
 
 namespace din_im_liau.Middlewares;
 
@@ -27,7 +28,15 @@ public class GlobalExceptionMiddleware
 
             Console.WriteLine(ex.ToString());
             var statusCode = StatusCodes.Status500InternalServerError;
-            if (ex is UnauthorizedAccessException)
+            var message = ex.Message;
+            var errorCode = 999;
+            if (ex is CustomPayloadException customerExp)
+            {
+                statusCode = (int)customerExp.HttpStatusCode;
+                message = customerExp.Message;
+                errorCode = (int)customerExp.ResultCode;
+            }
+            else if (ex is UnauthorizedAccessException)
             {
                 statusCode = StatusCodes.Status401Unauthorized;
             }
@@ -35,8 +44,6 @@ public class GlobalExceptionMiddleware
             {
                 statusCode = StatusCodes.Status500InternalServerError;
             }
-            var message = ex.Message;
-            var errorCode = 999;
             var response = JsonSerializer.Serialize(new { ErrorCode = errorCode, ErrorMessage = message }, _jsonSerializerOptions);
 
             context.Response.ContentType = "application/json";

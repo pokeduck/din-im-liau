@@ -6,6 +6,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
 using Models.ViewModels;
 using System.ComponentModel;
+using Common.Enums;
+using Microsoft.EntityFrameworkCore;
 
 #nullable disable warnings
 
@@ -18,7 +20,6 @@ public class Account : BaseDataModel, IUpdateEntity, ICreateEntity
     [MaxLength(length: 50)]
     public string Email { get; set; }
 
-    [DataMember(Order = 1)]
     [MaxLength(length: 50)]
     public string NickName { get; set; }
     [MaxLength(length: 200)]
@@ -33,8 +34,8 @@ public class Account : BaseDataModel, IUpdateEntity, ICreateEntity
 
     public int PermissionId { get; set; }
 
-    [DefaultValue(0)]
-    public int EmailValidStatus { get; set; }
+    [DefaultValue(EmailVerificationStatus.valid)]
+    public EmailVerificationStatus EmailValidStatus { get; set; }
 
     public string? AccessToken { get; set; }
 

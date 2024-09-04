@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.Extensions.DependencyInjection;
 using Models.DataModels;
+using Models.Exceptions;
 using Models.Repositories;
 using Models.ViewModels;
 
@@ -20,7 +21,7 @@ public class AccountService : BaseService<Account>
     public async Task<Account?> Get(string googleId)
     {
         var account = await Repository.ReadFirst(x => x.GoogleOpenId == googleId);
-        
+
         return account;
     }
 
@@ -32,7 +33,13 @@ public class AccountService : BaseService<Account>
 
     public async Task<Account> Create(string googleId, string nickName, string email, string thumbnailUrl)
     {
-        var newAccount = new Account { GoogleOpenId = googleId, NickName = nickName, Email = email, ThumbnailUrl = thumbnailUrl, PermissionId = 2 };
+        var lastAccount = await Repository.ReadFirst(x => x.Email == email);
+        if (lastAccount != null)
+        {
+            throw new BadRequestException($"The Email [{email}] already exists.",Common.Enums.ResultErrorCode.ResourceAlreadyExist);
+        }
+
+        var newAccount = new Account { GoogleOpenId = googleId, NickName = nickName, Email = email, ThumbnailUrl = thumbnailUrl, PermissionId = 2, EmailValidStatus = Common.Enums.EmailVerificationStatus.valid };
         await Repository.Create(newAccount);
         return newAccount;
     }

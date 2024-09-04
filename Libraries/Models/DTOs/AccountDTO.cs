@@ -1,5 +1,6 @@
 
 using System.ComponentModel.DataAnnotations;
+using System.Runtime.Serialization;
 
 namespace Models.DTOs;
 
@@ -8,13 +9,14 @@ namespace Models.DTOs;
 public class AccountDTO
 {
     [Required]
+    [DataMember(Order = 0)]
     public int? Uid { get; set; }
 
     [Required]
     public string? NickName { get; set; }
 
     [Required]
-    public bool? IsEmailValid { get; set; }
+    public bool? IsEmailVerified { get; set; }
 
 
 }

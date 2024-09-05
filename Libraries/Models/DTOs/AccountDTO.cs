@@ -18,5 +18,6 @@ public class AccountDTO
     [Required]
     public bool? IsEmailVerified { get; set; }
 
+    
 
 }

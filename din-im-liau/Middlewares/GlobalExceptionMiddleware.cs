@@ -3,6 +3,7 @@ using System.Text.Encodings.Web;
 using System.Text.Json;
 using Microsoft.AspNetCore.Http;
 using Models.Exceptions;
+using Models.Responses;
 
 namespace din_im_liau.Middlewares;
 
@@ -30,6 +31,7 @@ public class GlobalExceptionMiddleware
             var statusCode = StatusCodes.Status500InternalServerError;
             var message = ex.Message;
             var errorCode = 999;
+            object? payload = null;
             if (ex is CustomPayloadException customerExp)
             {
                 statusCode = (int)customerExp.HttpStatusCode;
@@ -44,7 +46,8 @@ public class GlobalExceptionMiddleware
             {
                 statusCode = StatusCodes.Status500InternalServerError;
             }
-            var response = JsonSerializer.Serialize(new { ErrorCode = errorCode, ErrorMessage = message }, _jsonSerializerOptions);
+            var defaultResponse = new DefaultResponse { Code = errorCode, Message = message, Data = payload };
+            var response = JsonSerializer.Serialize(defaultResponse, _jsonSerializerOptions);
 
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = statusCode;

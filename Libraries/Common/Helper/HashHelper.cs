@@ -1,5 +1,8 @@
 
 using System.Security.Cryptography;
+using System.Text;
+using Common.Extensions;
+using Konscious.Security.Cryptography;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Common.Helper;
@@ -7,6 +10,18 @@ namespace Common.Helper;
 
 public class HashHelper
 {
+    public static string Argon2Id(string source, string salt = "")
+    {
+        using var argon = new Argon2id(source.Bytes());
+        argon.Salt = salt.Bytes();
+        argon.DegreeOfParallelism = 16;
+        argon.Iterations = 8;
+        argon.MemorySize = 1024 * 128;
+        var argonBytes = argon.GetBytes(32);
+        var argonBase64 = argonBytes.Base64String();
+        return argonBase64;
+
+    }
     public static string Generate(byte[] data)
     {
 
@@ -14,14 +29,15 @@ public class HashHelper
         {
             try
             {
-                if (data.IsNullOrEmpty()) {
+                if (data.IsNullOrEmpty())
+                {
                     return "";
                 }
                 var result = sha256.ComputeHash(data);
                 var resultString = StringFromByteArray(result);
                 return resultString;
             }
-            catch 
+            catch
             {
                 return "";
             }

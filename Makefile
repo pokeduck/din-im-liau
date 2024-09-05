@@ -22,6 +22,10 @@ mlist:
 rollback:
 	dotnet ef database update $(target) -s $(STARTUP_PATH) -p $(PROJECT_PATH) 
 
+m-remove:
+	dotnet ef migrations remove -s $(STARTUP_PATH) -p $(PROJECT_PATH) 
+
+
 .PHONY: migration
 
 

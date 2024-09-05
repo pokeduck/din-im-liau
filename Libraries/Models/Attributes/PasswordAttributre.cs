@@ -4,7 +4,7 @@ using Common.Helper;
 
 namespace Models.Attributes;
 
-public class EmailRequiredAttribute : RequiredAttribute
+public class PasswordRequiredAttribute : RequiredAttribute
 {
     protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
     {
@@ -12,11 +12,11 @@ public class EmailRequiredAttribute : RequiredAttribute
 
         if (string.IsNullOrEmpty(valString))
         {
-            return new ValidationResult("Email Empty!");
+            return new ValidationResult("Password Empty!");
         }
-        else if (!RegexHelper.IsValidEmail(valString))
+        else if (!RegexHelper.IsValidPassword(valString))
         {
-            return new ValidationResult("Email wrong format.");
+            return new ValidationResult("Password wrong format.");
         }
 
         return ValidationResult.Success;

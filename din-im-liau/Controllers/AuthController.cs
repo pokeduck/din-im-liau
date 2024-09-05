@@ -71,15 +71,18 @@ public class AuthController : BaseController
     {
         var username = request.Username;
         var email = request.Email;
-        if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(email))
+        var password = request.Password;
+        if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
         {
             return BadRequest();
         }
 
-        var account = await AccountService.Create("", username, email, "");
-        var isEmailValid = (account.EmailValidStatus == 0) ? false : true;
 
-        return Ok(new AccountDTO { IsEmailVerified = isEmailValid, NickName = account.NickName, Uid = account.Id });
+        var account = await AccountService.Create(email, username, password);
+
+
+        Response200.Data = account;
+        return Ok(Response200);
         //throw new NotImplementedException("Exception Test 01");
         //return new BadRequestResult();
 

@@ -1,6 +1,7 @@
 using Common.Helper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Models.Responses;
 
 namespace din_im_liau.Middlewares;
 
@@ -22,8 +23,9 @@ public class ErrorMessageFilter : ActionFilterAttribute, IActionFilter
             //             .SelectMany(x => x.Errors)
             //             .Select(x => x.ErrorMessage);
             // var errorsString = string.Join('\n', errors);
+            var responseObj = new GenericResponse<object> { Data = errorObj };
 
-            var badresult = new BadRequestObjectResult(new { ErrorCode = 0, ErrorDetails = errorObj });
+            var badresult = new BadRequestObjectResult(responseObj);
             context.Result = badresult;
 
             return;
@@ -51,7 +53,10 @@ public class ErrorMessageFilter : ActionFilterAttribute, IActionFilter
             //             .Select(x => x.ErrorMessage);
             // var errorsString = string.Join('\n', errors);
 
-            var badresult = new BadRequestObjectResult(new { ErrorCode = 0, ErrorDetails = errorObj });
+            var responseObj = new DefaultResponse { Data = errorObj };
+
+            var badresult = new BadRequestObjectResult(responseObj);
+
             context.Result = badresult;
 
 

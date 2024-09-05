@@ -1,9 +1,11 @@
 
 using Amazon.S3.Model;
+using Common.Helper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.Extensions.DependencyInjection;
 using Models.DataModels;
+using Models.DTOs;
 using Models.Exceptions;
 using Models.Repositories;
 using Models.ViewModels;
@@ -31,12 +33,34 @@ public class AccountService : BaseService<Account>
         return account;
     }
 
+    public async Task<AccountDTO> Create(string email, string nickname, string password)
+    {
+        var lastAccount = await Repository.ReadFirst(x => x.Email == email);
+        if (lastAccount != null)
+        {
+            throw new BadRequestException($"The Email [{email}] already exists.", Common.Enums.ResultErrorCode.ResourceAlreadyExist);
+        }
+
+        var newSalt = SaltHelper.GenerateN();
+        var hashPwd = HashHelper.Argon2Id(password, newSalt);
+        var newAcc = new Account { Email = email, NickName = nickname, ThumbnailUrl = null, GoogleOpenId = "", EmailValidStatus = Common.Enums.EmailVerificationStatus.invalid, Salt = newSalt, HashPassword = hashPwd, PermissionId = 2 };
+        await Repository.Create(newAcc);
+        var newAccWrited = await Repository.ReadFirst(x => x.Email == email);
+        if (newAccWrited == null)
+        {
+            throw new BadRequestException("internal error.");
+        }
+        var isEmailValid = (newAccWrited.EmailValidStatus == Common.Enums.EmailVerificationStatus.invalid) ? false : true;
+
+        return new AccountDTO { IsEmailVerified = isEmailValid, NickName = newAccWrited.NickName, Uid = newAccWrited.Id };
+    }
+
     public async Task<Account> Create(string googleId, string nickName, string email, string thumbnailUrl)
     {
         var lastAccount = await Repository.ReadFirst(x => x.Email == email);
         if (lastAccount != null)
         {
-            throw new BadRequestException($"The Email [{email}] already exists.",Common.Enums.ResultErrorCode.ResourceAlreadyExist);
+            throw new BadRequestException($"The Email [{email}] already exists.", Common.Enums.ResultErrorCode.ResourceAlreadyExist);
         }
 
         var newAccount = new Account { GoogleOpenId = googleId, NickName = nickName, Email = email, ThumbnailUrl = thumbnailUrl, PermissionId = 2, EmailValidStatus = Common.Enums.EmailVerificationStatus.valid };

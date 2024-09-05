@@ -50,6 +50,11 @@ public class RegexHelper
         }
     }
 
+    public static bool IsValidPassword(string password)
+    {
+        return true;
+    }
+
     public static string ConvertToSnakeCase(string value)
     {
         var snakeCase = Regex.Replace(value, "([a-z])([A-Z])", "$1_$2").ToLower();

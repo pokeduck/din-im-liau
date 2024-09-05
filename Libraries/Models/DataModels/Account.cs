@@ -39,6 +39,11 @@ public class Account : BaseDataModel, IUpdateEntity, ICreateEntity
 
     public string? AccessToken { get; set; }
 
+
+    [DefaultValue(null)]
+    public string? HashPassword { get; set; }
+
+    [DefaultValue(null)]
     public string? Salt { get; set; }
 
     [Required]

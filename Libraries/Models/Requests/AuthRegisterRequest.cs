@@ -15,7 +15,7 @@ public class AuthRegisterRequest
     [MaxLength(length: 20)]
     public string? Username { get; set; }
 
-    [Required(ErrorMessage = "Require Username")]
+    [PasswordRequired]
     public string? Password { get; set; }
 
 

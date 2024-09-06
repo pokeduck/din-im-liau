@@ -50,9 +50,10 @@ public class AccountService : BaseService<Account>
         {
             throw new BadRequestException("internal error.");
         }
-        var isEmailValid = (newAccWrited.EmailValidStatus == Common.Enums.EmailVerificationStatus.invalid) ? false : true;
+        var accountDTO = Mapper.Map<AccountDTO>(newAccWrited);
+        //var isEmailValid = (newAccWrited.EmailValidStatus == Common.Enums.EmailVerificationStatus.invalid) ? false : true;
 
-        return new AccountDTO { IsEmailVerified = isEmailValid, NickName = newAccWrited.NickName, Uid = newAccWrited.Id };
+        return accountDTO;
     }
 
     public async Task<Account> Create(string googleId, string nickName, string email, string thumbnailUrl)

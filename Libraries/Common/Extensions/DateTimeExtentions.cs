@@ -17,4 +17,14 @@ public static class DateTimeExtensions
         TimeUnit.Milliseconds => ((DateTimeOffset)source).ToUnixTimeMilliseconds(),
         _ => throw new NotImplementedException("不支援的轉換單位"),
     };
+
+    public static string ToUnixTimeSecondsString(this DateTime source)
+    {
+        return (new DateTimeOffset(source)).ToUnixTimeSeconds().ToString();
+    }
+
+    public static long ToUnixTimeSeconds(this DateTime source)
+    {
+        return (new DateTimeOffset(source)).ToUnixTimeSeconds();
+    }
 }

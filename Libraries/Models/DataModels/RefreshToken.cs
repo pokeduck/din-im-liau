@@ -1,4 +1,3 @@
-
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Common.Enums;
@@ -8,7 +7,7 @@ using Models.DataModels;
 #nullable disable warnings
 
 namespace Models.DataModels;
-public class EmailVerificationToken : BaseDataModel, ICreateEntity, IUpdateEntity
+public class RefreshToken : BaseDataModel, ICreateEntity, IUpdateEntity
 {
 
     [NotMapped]

@@ -13,11 +13,11 @@ public class AccountDTO
     public int? Uid { get; set; }
 
     [Required]
-    public string? NickName { get; set; }
+    public string? Nickname { get; set; }
 
     [Required]
     public bool? IsEmailVerified { get; set; }
 
-    
+
 
 }

@@ -30,9 +30,15 @@ using System.Security.Cryptography.Xml;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using Asp.Versioning.ApiExplorer;
+using Models.Settings;
+using System.ComponentModel;
+
 try
 {
     var builder = WebApplication.CreateBuilder(args);
+
+
+    builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
     // Add services to the container.
     var mvcBuilder = builder.Services.AddRazorPages();
@@ -53,6 +59,11 @@ try
         options.LowercaseUrls = true;
         options.LowercaseQueryStrings = true;
     });
+
+
+    builder.Services.AddOptions<JwtSetting>()
+    .Configure<IConfiguration>((settings, config) => config.GetSection("JwtSettings").Bind(settings));
+
 
     builder.Services.AddAuthentication(config =>
     {
@@ -99,7 +110,7 @@ try
 
             // 一般我們都會驗證 Issuer
             ValidateIssuer = false,
-            ValidIssuer = "drink",
+            ValidIssuer = builder.Configuration.GetValue<string>("JwtSettings:Issuer"),
 
             // 通常不太需要驗證 Audience
             ValidateAudience = false,
@@ -112,7 +123,7 @@ try
             ValidateIssuerSigningKey = false,
 
             // "1234567890123456" 應該從 IConfiguration 取得
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("5nI8s5Y9fJ7vL9vE8sK9lX3oJ6hW2xR5kV8dT3sP4aN0zQ7rU1oD2mX8vY3sH1pG"))
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetValue<string>("JwtSettings:Key")!))
         };
         options.Events = new JwtBearerEvents
         {

@@ -3,11 +3,14 @@ using din_im_liau.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Models.DataModels;
+using Services;
 
 namespace din_im_liau.Middlewares;
 
-public class BearerJwtFilter : ActionFilterAttribute
+public class BearerJwtFilter(AccountService accountService) : ActionFilterAttribute
 {
+
+    private readonly AccountService _accountService = accountService;
     public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
         if (context.HasActionAttribute<AllowAnonymousAttribute>())
@@ -17,9 +20,9 @@ public class BearerJwtFilter : ActionFilterAttribute
         }
 
         var user = context.HttpContext.User;
-        var uId = user.FindFirstValue("accountId");
-        if (uId == null)
-            throw new UnauthorizedAccessException("Your token has expired!");
+        var uId = user.FindFirstValue("uid") ?? throw new UnauthorizedAccessException("Your token has expired!");
+
+
 
         var mockupAccount = new Account();
         var convertResult = int.TryParse(uId, out var intUid);
@@ -28,11 +31,11 @@ public class BearerJwtFilter : ActionFilterAttribute
             throw new UnauthorizedAccessException("Your token is invalid!");
         }
 
+        var lastAccount = await _accountService.GetByAccountId(intUid) ?? throw new UnauthorizedAccessException("Your token uid is Invalid");
 
-        mockupAccount.Id = intUid;
 
 
-        context.HttpContext.Items.Add("Account", mockupAccount);
+        context.HttpContext.Items.Add("Account", lastAccount);
 
         Console.WriteLine(user);
 

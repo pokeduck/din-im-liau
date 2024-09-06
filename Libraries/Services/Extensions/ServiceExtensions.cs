@@ -10,6 +10,8 @@ public static class ServiceExtensions
     {
         Console.WriteLine("do something...");
         Console.WriteLine(services);
+
+        services.AddSingleton<JwtService>();
     }
 
     public static void RegisterBaseServices(this IServiceCollection services)

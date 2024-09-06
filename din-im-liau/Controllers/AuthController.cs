@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Models.Attributes;
 using Models.Responses;
 using Models.DTOs;
+using Microsoft.Extensions.Options;
+using Services.Extensions;
 
 namespace din_im_liau.Controllers;
 
@@ -14,15 +16,13 @@ namespace din_im_liau.Controllers;
 // [Produces("application/json")]
 // [ApiController]
 [SwaggerTag("驗證")]
-public class AuthController : BaseController
+public class AuthController(AccountService accountService, JwtService jwtService, RefreshTokenService refreshTokenService) : BaseController
 {
 
-    private AccountService AccountService;
+    private readonly AccountService _accountService = accountService;
+    private readonly JwtService _jwtService = jwtService;
 
-    public AuthController(AccountService accountService)
-    {
-        AccountService = accountService;
-    }
+    private readonly RefreshTokenService _refreshTokenService = refreshTokenService;
 
     /// <summary>
     /// 登入
@@ -34,6 +34,19 @@ public class AuthController : BaseController
     public async Task<IActionResult> Login([FromBody] LoginRequest login)
     {
         return Ok(login);
+    }
+
+
+    /// <summary>
+    /// 利用AccessToken登入
+    /// </summary>
+    /// <returns></returns>
+    [HttpPost("login-with-token")]
+    public IActionResult LoginWithToken()
+    {
+        var account = HttpContext.GetAccount();
+        Response200.Data = account;
+        return Ok(Response200);
     }
 
     /// <summary>
@@ -78,10 +91,19 @@ public class AuthController : BaseController
         }
 
 
-        var account = await AccountService.Create(email, username, password);
+        var accountDTO = await _accountService.Create(email, username, password);
 
+        var refreshTokeGuid = Guid.NewGuid();
+        var refreshToken = _jwtService.GenerateRefreshToken(refreshTokeGuid.ToString(), accountDTO.Uid ?? 0);
+        var token = _jwtService.Generate(accountDTO.Uid ?? 0);
 
-        Response200.Data = account;
+        await _refreshTokenService.Create(refreshTokeGuid, accountDTO.Uid ?? 0);
+        Response200.Data = new RegisterDTO
+        {
+            AccessToken = token,
+            Account = accountDTO,
+            RefreshToken = refreshToken,
+        };
         return Ok(Response200);
         //throw new NotImplementedException("Exception Test 01");
         //return new BadRequestResult();

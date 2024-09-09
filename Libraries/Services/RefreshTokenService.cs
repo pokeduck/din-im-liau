@@ -33,7 +33,7 @@ public class RefreshTokenService : BaseService<RefreshToken>
         if (lastToken == null)
             return null;
 
-        if (lastToken.Status != TokenStatus.alive)
+        if (lastToken.Status != TokenStatus.Alive)
         {
             return null;
         }
@@ -42,7 +42,7 @@ public class RefreshTokenService : BaseService<RefreshToken>
         var nowSecond = DateTime.UtcNow.ToUnixTimeSeconds();
         if (lastToken.CreateTime >= nowSecond)
         {
-            lastToken.Status = TokenStatus.revoked;
+            lastToken.Status = TokenStatus.Revoked;
             await Repository.Update(lastToken);
             return null;
         }

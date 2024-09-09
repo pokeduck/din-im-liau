@@ -47,7 +47,7 @@ public class ProfileModel : BasePageModel
 
         ProfileVM = new ProfileVM
         {
-            NickName = Account?.NickName ?? "",
+            NickName = Account?.Nickname ?? "",
             Email = Account?.Email ?? "",
             AvatarUrl = Account?.ThumbnailUrl ?? "https://localhost:8888/assets/profile-placeholder.png"
 

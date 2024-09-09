@@ -16,9 +16,10 @@ namespace din_im_liau.Controllers;
 // [Produces("application/json")]
 // [ApiController]
 [SwaggerTag("驗證")]
-public class AuthController(AccountService accountService, JwtService jwtService, RefreshTokenService refreshTokenService) : BaseController
+public class AuthController(AuthService authService, AccountService accountService, JwtService jwtService, RefreshTokenService refreshTokenService) : BaseController
 {
 
+    private readonly AuthService _authService = authService;
     private readonly AccountService _accountService = accountService;
     private readonly JwtService _jwtService = jwtService;
 
@@ -75,7 +76,7 @@ public class AuthController(AccountService accountService, JwtService jwtService
     /// <summary>
     /// 註冊會員
     /// </summary>
-    /// <param name="register">會員資料</param>
+    /// <param name="request">會員資料</param>
     /// <returns></returns>
     [AllowAnonymous]
     [HttpPost("register")]
@@ -89,25 +90,9 @@ public class AuthController(AccountService accountService, JwtService jwtService
         {
             return BadRequest();
         }
-
-
-        var accountDTO = await _accountService.Create(email, username, password);
-
-        var refreshTokeGuid = Guid.NewGuid();
-        var refreshToken = _jwtService.GenerateRefreshToken(refreshTokeGuid.ToString(), accountDTO.Uid ?? 0);
-        var token = _jwtService.Generate(accountDTO.Uid ?? 0);
-
-        await _refreshTokenService.Create(refreshTokeGuid, accountDTO.Uid ?? 0);
-        Response200.Data = new RegisterDTO
-        {
-            AccessToken = token,
-            Account = accountDTO,
-            RefreshToken = refreshToken,
-        };
+        var result = await _authService.Create(username, email, password);
+        Response200.Data = result;
         return Ok(Response200);
-        //throw new NotImplementedException("Exception Test 01");
-        //return new BadRequestResult();
-
     }
 
 

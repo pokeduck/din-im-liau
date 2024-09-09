@@ -13,7 +13,7 @@ public class JwtService(IOptions<JwtSetting> jwtSetting)
 {
     private readonly JwtSetting _jwtSetting = jwtSetting.Value;
 
-    public string Generate(int uid)
+    public string GenerateAccessToken(int uid, string? guidString = null)
     {
         var key = _jwtSetting.Key;
         var issuer = _jwtSetting.Issuer;
@@ -25,9 +25,11 @@ public class JwtService(IOptions<JwtSetting> jwtSetting)
         var now = DateTime.UtcNow;
         var expTime = now.AddSeconds(expSpanSeconds);
 
+        var localGuidString = guidString ?? Guid.NewGuid().ToString();
+
         var claims = new List<Claim>
         {
-            new(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString()),
+            new(JwtRegisteredClaimNames.Jti,localGuidString),
             new(JwtRegisteredClaimNames.Exp, expTime.ToUnixTimeSecondsString()),
             new("uid",uid.ToString()),
             new(JwtRegisteredClaimNames.Iat, now.ToUnixTimeSecondsString())

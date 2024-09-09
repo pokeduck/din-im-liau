@@ -31,10 +31,12 @@ public class RegexHelper
         }
         catch (RegexMatchTimeoutException e)
         {
+            Console.WriteLine(e.Message);
             return false;
         }
         catch (ArgumentException e)
         {
+            Console.WriteLine(e.Message);
             return false;
         }
 

@@ -48,7 +48,7 @@ public class BasePageModel : PageModel
             {
 
                 ViewData[IsLoggedInKey] = true;
-                ViewData[NickNameKey] = account.NickName;
+                ViewData[NickNameKey] = account.Nickname;
                 ViewData[EmailKey] = account.Email;
             }
             else

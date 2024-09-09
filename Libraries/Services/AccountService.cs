@@ -43,7 +43,7 @@ public class AccountService : BaseService<Account>
 
         var newSalt = SaltHelper.GenerateN();
         var hashPwd = HashHelper.Argon2Id(password, newSalt);
-        var newAcc = new Account { Email = email, NickName = nickname, ThumbnailUrl = null, GoogleOpenId = "", EmailValidStatus = Common.Enums.EmailVerificationStatus.invalid, Salt = newSalt, HashPassword = hashPwd, PermissionId = 2 };
+        var newAcc = new Account { Email = email, Nickname = nickname, ThumbnailUrl = null, GoogleOpenId = "", EmailValidStatus = Common.Enums.EmailVerificationStatus.invalid, Salt = newSalt, HashPassword = hashPwd, PermissionId = 2 };
         await Repository.Create(newAcc);
         var newAccWrited = await Repository.ReadFirst(x => x.Email == email);
         if (newAccWrited == null)
@@ -64,7 +64,7 @@ public class AccountService : BaseService<Account>
             throw new BadRequestException($"The Email [{email}] already exists.", Common.Enums.ResultErrorCode.ResourceAlreadyExist);
         }
 
-        var newAccount = new Account { GoogleOpenId = googleId, NickName = nickName, Email = email, ThumbnailUrl = thumbnailUrl, PermissionId = 2, EmailValidStatus = Common.Enums.EmailVerificationStatus.valid };
+        var newAccount = new Account { GoogleOpenId = googleId, Nickname = nickName, Email = email, ThumbnailUrl = thumbnailUrl, PermissionId = 2, EmailValidStatus = Common.Enums.EmailVerificationStatus.valid };
         await Repository.Create(newAccount);
         return newAccount;
     }
@@ -76,7 +76,7 @@ public class AccountService : BaseService<Account>
         {
             return;
         }
-        account.NickName = nickName;
+        account.Nickname = nickName;
 
         await Repository.Update(account);
     }

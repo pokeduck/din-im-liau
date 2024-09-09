@@ -248,6 +248,10 @@ csharp_prefer_braces = when_multiline:warning
 # NOTE: We need the below severity entry for Add Braces due to https://github.com/dotnet/roslyn/issues/44201
 dotnet_diagnostic.IDE0011.severity = warning
 
+# 使用主要建構函式
+[*.{cs,vb}]
+dotnet_diagnostic.IDE0290.severity = none
+
 # IDE0040: Add accessibility modifiers
 dotnet_diagnostic.IDE0040.severity = warning
 

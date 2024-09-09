@@ -1,7 +1,19 @@
 using System.Dynamic;
+using System.Security.Claims;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Common.Extensions;
 using Microsoft.IdentityModel.JsonWebTokens;
+using Microsoft.IdentityModel.Tokens;
+
+// using System.IdentityModel.Tokens.Jwt;
+// using System.Security.Claims;
+// using System.Security.Cryptography;
+// using Common.Extensions;
+// using Microsoft.Extensions.Options;
+// using Microsoft.IdentityModel.Tokens;
+
+
 namespace Services.Helper;
 
 
@@ -38,6 +50,7 @@ public class GoogleJwtPayloadModel
     public string? Picture { get; set; }
 
     [JsonPropertyName("given_name")]
+
     public string GivenName { get; set; }
 
     [JsonPropertyName("family_name")]
@@ -52,6 +65,51 @@ public class GoogleJwtPayloadModel
 
 public class JwtHelper
 {
+
+    public static string GenerateToken(int uid, string guidString, long expSpanSeconds, string key, string issuer)
+    {
+
+
+        if (string.IsNullOrWhiteSpace(key) || string.IsNullOrWhiteSpace(issuer))
+            throw new ArgumentException("Jwt settings is empty.");
+
+        var now = DateTime.UtcNow;
+        var expTime = now.AddSeconds(expSpanSeconds);
+
+        var localGuidString = guidString ?? Guid.NewGuid().ToString();
+
+        var claims = new List<Claim>
+        {
+            new(JwtRegisteredClaimNames.Jti,localGuidString),
+            new(JwtRegisteredClaimNames.Exp, expTime.ToUnixTimeSecondsString()),
+            new("uid",uid.ToString()),
+            new(JwtRegisteredClaimNames.Iat, now.ToUnixTimeSecondsString())
+        };
+
+        var newUserClaimsIdentity = new ClaimsIdentity(claims);
+
+        var securityKey = new SymmetricSecurityKey(key.Bytes());
+
+        var signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256Signature);
+
+        var tokenDescriptor = new SecurityTokenDescriptor
+        {
+            Issuer = issuer,
+            Subject = newUserClaimsIdentity,
+            Expires = expTime,
+            SigningCredentials = signingCredentials
+        };
+
+
+
+
+        var tokenHandler = new JsonWebTokenHandler();
+        var securityToken = tokenHandler.CreateToken(tokenDescriptor);
+        // var serializeToken = tokenHandler.EncryptToken(securityToken);
+
+        return securityToken;
+    }
+
     public static GoogleJwtPayloadModel contertToGooglePayload(string token)
     {
         var handler = new JsonWebTokenHandler();

@@ -1,4 +1,3 @@
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Common.Enums;
@@ -8,7 +7,7 @@ using Models.DataModels;
 #nullable disable warnings
 
 namespace Models.DataModels;
-public class RefreshToken : BaseDataModel, ICreateEntity, IUpdateEntity
+public class AccessToken : BaseDataModel, ICreateEntity, IUpdateEntity
 {
 
     [NotMapped]
@@ -24,14 +23,13 @@ public class RefreshToken : BaseDataModel, ICreateEntity, IUpdateEntity
     public int AccountId { get; set; }
 
     [Required]
-    [DeleteBehavior(DeleteBehavior.Cascade)]
+    [DeleteBehavior(DeleteBehavior.Restrict)]
     public Account Account { get; init; }
 
     [Required]
     public TokenStatus Status { get; set; }
 
     [Required]
-    [DefaultValue(0)]
     public long ExpireTime { get; set; }
 
 

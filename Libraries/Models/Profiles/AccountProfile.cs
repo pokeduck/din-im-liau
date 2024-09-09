@@ -12,8 +12,8 @@ public class AccountProfile : Profile
     {
         CreateMap<Account, AccountDTO>()
         .ForMember(dest => dest.Uid, src => src.MapFrom(o => o.Id))
-        .ForMember(dest => dest.Nickname, src => src.MapFrom(o => o.NickName))
+        .ForMember(dest => dest.Nickname, src => src.MapFrom(o => o.Nickname))
         .ForMember(dest => dest.IsEmailVerified, src => src.MapFrom(o => o.EmailValidStatus == Common.Enums.EmailVerificationStatus.valid));
-        
+
     }
 }

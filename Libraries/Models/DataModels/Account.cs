@@ -16,21 +16,19 @@ namespace Models.DataModels;
 public class Account : BaseDataModel, IUpdateEntity, ICreateEntity
 {
 
-    [Required]
     [MaxLength(length: 50)]
     public string Email { get; set; }
 
     [MaxLength(length: 50)]
-    public string NickName { get; set; }
+    public string Nickname { get; set; }
     [MaxLength(length: 200)]
 
 
     public string? ThumbnailUrl { get; set; }
 
-    [Required]
     [MaxLength(length: 50)]
-    [DefaultValue("")]
-    public string GoogleOpenId { get; set; }
+    [DefaultValue(null)]
+    public string? GoogleOpenId { get; set; }
 
     public int PermissionId { get; set; }
 
@@ -39,6 +37,9 @@ public class Account : BaseDataModel, IUpdateEntity, ICreateEntity
 
     public string? AccessToken { get; set; }
 
+    [Required]
+    [DefaultValue(AccountStatus.Unverified)]
+    public AccountStatus AccountStatus { get; set; }
 
     [DefaultValue(null)]
     public string? HashPassword { get; set; }
@@ -59,4 +60,9 @@ public class Account : BaseDataModel, IUpdateEntity, ICreateEntity
     public ICollection<Order> Orders { get; set; } = new List<Order>();
 
     public ICollection<OrderRecord> OrderRecords { get; set; } = new HashSet<OrderRecord>();
+
+
+    public ICollection<AccessToken> AccessTokens { get; } = new HashSet<AccessToken>();
+
+    public ICollection<RefreshToken> RefreshTokens { get; } = new HashSet<RefreshToken>();
 }

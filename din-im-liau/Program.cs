@@ -348,7 +348,10 @@ try
     {
         app.UseExceptionHandler("/error-development");
         app.UseSwagger();
-        app.UseSwaggerUI();
+        app.UseSwaggerUI(option =>
+        {
+            option.SwaggerEndpoint("/swagger/v1/swagger.json", "api v1");
+        });
     }
     else
     {

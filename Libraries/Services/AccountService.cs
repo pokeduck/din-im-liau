@@ -27,12 +27,34 @@ public class AccountService : BaseService<Account>
         return account;
     }
 
-    public async Task<Account?> GetByAccountId(int accountId)
+    public async Task<Account?> GetAccountById(int accountId)
     {
         var account = await Repository.ReadFirstById(accountId);
         return account;
     }
 
+    public async Task<AccountDTO?> GetAccountDTOById(int accountId)
+    {
+        var account = await Repository.ReadFirstById(accountId);
+        var resultDTO = Mapper.Map<AccountDTO>(account);
+        return resultDTO;
+    }
+
+
+    public async Task<AccountDTO> SignIn(string email, string password)
+    {
+        var lastAccount = await Repository.ReadFirst(x => x.Email == email) ?? throw new NotFoundException("帳號或密碼錯誤");
+
+        var lastSalt = lastAccount.Salt;
+
+        var hashedInputPassword = HashHelper.Argon2Id(password, lastSalt ?? "");
+
+        if (hashedInputPassword != lastAccount.HashPassword)
+            throw new NotFoundException("帳號或密碼錯誤");
+
+        var accountDTO = Mapper.Map<AccountDTO>(lastAccount);
+        return accountDTO;
+    }
     public async Task<AccountDTO> Create(string email, string nickname, string password)
     {
         var lastAccount = await Repository.ReadFirst(x => x.Email == email);

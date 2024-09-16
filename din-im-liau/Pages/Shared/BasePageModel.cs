@@ -42,7 +42,7 @@ public class BasePageModel : PageModel
     {
         if (User.Identity?.IsAuthenticated ?? false)
         {
-            var account = await _accountService.GetByAccountId(Id);
+            var account = await _accountService.GetAccountById(Id);
             Account = account;
             if (account != null)
             {

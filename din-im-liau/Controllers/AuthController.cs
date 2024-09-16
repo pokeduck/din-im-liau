@@ -9,6 +9,7 @@ using Models.Responses;
 using Models.DTOs;
 using Microsoft.Extensions.Options;
 using Services.Extensions;
+using Models.Exceptions;
 
 namespace din_im_liau.Controllers;
 
@@ -34,7 +35,10 @@ public class AuthController(AuthService authService, AccountService accountServi
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequest login)
     {
-        return Ok(login);
+        var lastAccount = await _accountService.SignIn(login.Account, login.Password);
+        Response200.Data = lastAccount;
+
+        return Ok(Response200);
     }
 
 

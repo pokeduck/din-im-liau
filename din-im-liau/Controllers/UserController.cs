@@ -5,6 +5,9 @@ using Models.DTOs;
 using Models.Responses;
 using Services;
 using Swashbuckle.AspNetCore.Annotations;
+using Microsoft.AspNetCore.Authorization;
+using Models.Exceptions;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace din_im_liau.Controllers;
 
@@ -39,7 +42,13 @@ public class UserController : BaseController
     [SwaggerSuccessResponse(typeof(GenericResponse<AccountDTO>))]
     public async Task<IActionResult> Profile()
     {
-        return Ok(Account);
+
+        var currentAccountId = Account?.Id ?? throw new NotFoundException(" user not found");
+        var currentAccount = await AccountService.GetAccountDTOById(currentAccountId) ?? throw new NotFoundException(" user not found");
+
+        Response200.Data = currentAccount;
+
+        return Ok(Response200);
     }
 
     /// <summary>

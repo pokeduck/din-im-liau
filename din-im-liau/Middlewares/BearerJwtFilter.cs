@@ -31,7 +31,7 @@ public class BearerJwtFilter(AccountService accountService) : ActionFilterAttrib
             throw new UnauthorizedAccessException("Your token is invalid!");
         }
 
-        var lastAccount = await _accountService.GetByAccountId(intUid) ?? throw new UnauthorizedAccessException("Your token uid is Invalid");
+        var lastAccount = await _accountService.GetAccountById(intUid) ?? throw new UnauthorizedAccessException("Your token uid is Invalid");
 
 
 

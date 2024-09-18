@@ -41,20 +41,7 @@ public class AccountService : BaseService<Account>
     }
 
 
-    public async Task<AccountDTO> SignIn(string email, string password)
-    {
-        var lastAccount = await Repository.ReadFirst(x => x.Email == email) ?? throw new NotFoundException("帳號或密碼錯誤");
 
-        var lastSalt = lastAccount.Salt;
-
-        var hashedInputPassword = HashHelper.Argon2Id(password, lastSalt ?? "");
-
-        if (hashedInputPassword != lastAccount.HashPassword)
-            throw new NotFoundException("帳號或密碼錯誤");
-
-        var accountDTO = Mapper.Map<AccountDTO>(lastAccount);
-        return accountDTO;
-    }
     public async Task<AccountDTO> Create(string email, string nickname, string password)
     {
         var lastAccount = await Repository.ReadFirst(x => x.Email == email);

@@ -60,16 +60,16 @@ public class BaseController : ControllerBase
 
     }
 
-    protected Account? Account
+    protected Account Account
     {
         get
         {
             var result = HttpContext.Items.TryGetValue("Account", out var value);
 
             if (!result)
-                return null;
+                return new Account();
 
-            var newAcc = (Account?)value;
+            var newAcc = (Account?)value ?? new Account();
             return newAcc;
 
         }

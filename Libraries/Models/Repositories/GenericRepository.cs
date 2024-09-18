@@ -104,6 +104,29 @@ public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEnt
         return await Query(predicate, include, order, asNoTracking).FirstOrDefaultAsync(x => x.Id == id);
     }
 
+    public async Task<List<TEntity>> ReadList(
+        Expression<Func<TEntity, bool>>? predicate = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IQueryable<TEntity>>? order = null,
+        bool asNoTracking = true
+    )
+    {
+        return await Query(predicate, include, order, asNoTracking).ToListAsync();
+    }
+
+
+    public async Task UpdateRange(List<TEntity> entities)
+    {
+        if (entities is IEnumerable<IUpdateEntity> updateEntities) {
+            foreach(var e in updateEntities) {
+                e.UpdateTime = DateTime.Now.ToUnixTimeSeconds();
+            }
+        }
+        _dataContext.UpdateRange(entities);
+
+        await _dataContext.SaveChangesAsync();
+    }
+
 
     public async Task Update(TEntity entity, bool saveImediately = true)
     {

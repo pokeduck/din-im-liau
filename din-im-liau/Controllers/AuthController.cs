@@ -10,6 +10,7 @@ using Models.DTOs;
 using Microsoft.Extensions.Options;
 using Services.Extensions;
 using Models.Exceptions;
+using System.Security.Claims;
 
 namespace din_im_liau.Controllers;
 
@@ -35,7 +36,7 @@ public class AuthController(AuthService authService, AccountService accountServi
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequest login)
     {
-        var lastAccount = await _accountService.SignIn(login.Account, login.Password);
+        var lastAccount = await _authService.SignIn(login.Account, login.Password);
         Response200.Data = lastAccount;
 
         return Ok(Response200);
@@ -73,7 +74,9 @@ public class AuthController(AuthService authService, AccountService accountServi
     [HttpPost("logout")]
     public async Task<IActionResult> Logout()
     {
-        return Ok(Account);
+        var jti = HttpContext.User.FindFirstValue("jti") ?? throw new NotFoundException("Access Token not found.");
+        await _authService.RevokeAccessToken(jti);
+        return Ok(Response200);
     }
 
 
@@ -102,7 +105,7 @@ public class AuthController(AuthService authService, AccountService accountServi
 
 
     /// <summary>
-    /// 忘記密碼
+    /// 忘記密碼，發送密碼到Email
     /// </summary>
     /// <returns></returns>
     [HttpPost("forgot-password")]
@@ -113,14 +116,21 @@ public class AuthController(AuthService authService, AccountService accountServi
 
 
     /// <summary>
-    /// 重設密碼
+    /// 重設密碼依據Email Token
     /// </summary>
-    /// <returns></returns> <summary>
-    /// 
-    /// </summary>
-    /// <returns></returns>
+    /// <returns></returns> 
     [HttpPost("reset-password")]
     public async Task<IActionResult> ResetPassword()
+    {
+        return Ok();
+    }
+
+    /// <summary>
+    /// 修改密碼
+    /// </summary>
+    /// <returns></returns>
+    [HttpPost("modify-password")]
+    public async Task<IActionResult> ModifyPassword()
     {
         return Ok();
     }
@@ -132,7 +142,7 @@ public class AuthController(AuthService authService, AccountService accountServi
     /// <param name="token"> email token </param>
     /// <returns></returns>
     [AllowAnonymous]
-    [HttpGet("email-verification")]
+    [HttpGet("verify-email")]
     public async Task<IActionResult> EmailVerification([FromQuery] string token)
     {
         return Ok(new { token = token });
@@ -142,10 +152,11 @@ public class AuthController(AuthService authService, AccountService accountServi
     /// 發送驗證email
     /// </summary>
     /// <returns></returns>
-    [HttpPost("verify-email")]
+    [HttpPost("resend-verify-email")]
     public async Task<IActionResult> SendVerifyEmail()
     {
-        return Ok();
+        Response200.Data = _authService.CreateEmailVerifyToken(Account.Id);
+        return Ok(Response200);
     }
 
 

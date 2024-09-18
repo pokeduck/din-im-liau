@@ -35,4 +35,13 @@ public interface IGenericRepository<TEntity> where TEntity : BaseDataModel
     public Task Update(TEntity entity, bool saveImediately = true);
 
     public Task Delete(TEntity entity, bool saveImediately = true);
+
+    public Task UpdateRange(List<TEntity> entities);
+
+    public Task<List<TEntity>> ReadList(
+            Expression<Func<TEntity, bool>>? predicate = null,
+            Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+            Func<IQueryable<TEntity>, IQueryable<TEntity>>? order = null,
+            bool asNoTracking = true
+        );
 }

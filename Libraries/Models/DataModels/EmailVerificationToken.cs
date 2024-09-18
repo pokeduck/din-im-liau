@@ -1,4 +1,5 @@
 
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Common.Enums;
@@ -25,6 +26,11 @@ public class EmailVerificationToken : BaseDataModel, ICreateEntity, IUpdateEntit
 
     [Required]
     public TokenStatus Status { get; set; }
+
+
+    [Required]
+    [DefaultValue(0)]
+    public long ExpireTime { get; set; }
 
     [Required]
     public long CreateTime { get; set; }

@@ -1,8 +1,10 @@
 
 
 
+using System.Diagnostics.CodeAnalysis;
 using Amazon.S3.Model;
 using AutoMapper;
+using Common.Enums;
 using Common.Extensions;
 using Common.Helper;
 using Microsoft.AspNetCore.Authentication.BearerToken;
@@ -27,6 +29,9 @@ public class AuthService : BaseService<Account>
     private readonly IGenericRepository<AccessToken> _accessTokenRepository;
     private readonly IGenericRepository<RefreshToken> _refreshTokenRepository;
 
+    private readonly IGenericRepository<EmailVerificationToken> _emailVerifyTokenRepository;
+
+
     private readonly JwtSetting _jwtSetting;
 
     public AuthService(
@@ -47,7 +52,30 @@ public class AuthService : BaseService<Account>
 
         Console.WriteLine("init");
     }
+    public async Task<RegisterDTO> SignIn(string email, string password)
+    {
+        var lastAccount = await Repository.ReadFirst(x => x.Email == email) ?? throw new NotFoundException("帳號或密碼錯誤");
 
+        var lastSalt = lastAccount.Salt;
+
+        var hashedInputPassword = HashHelper.Argon2Id(password, lastSalt ?? "");
+
+        if (hashedInputPassword != lastAccount.HashPassword)
+            throw new NotFoundException("帳號或密碼錯誤");
+
+        var accountDTO = Mapper.Map<AccountDTO>(lastAccount);
+
+        var tokens = await CreateAccessTokenAndWriteToDB(lastAccount);
+
+        var result = new RegisterDTO
+        {
+            Account = accountDTO,
+            AccessToken = tokens.accessToken,
+            RefreshToken = tokens.refreshToken,
+        };
+
+        return result;
+    }
     public async Task<RegisterDTO> Create(string nickname, string email, string password)
     {
         //1.check email exist
@@ -63,8 +91,6 @@ public class AuthService : BaseService<Account>
         var salt = SaltHelper.GenerateN();
         var hashedPassword = HashHelper.Argon2Id(password, salt);
 
-        var assessTokenGuid = Guid.NewGuid();
-        var refreshTokenGuid = Guid.NewGuid();
 
         var newAccount = new Account
         {
@@ -79,18 +105,23 @@ public class AuthService : BaseService<Account>
 
         await Repository.Create(newAccount, true);
 
+
+        var assessTokenGuid = Guid.NewGuid();
+        var refreshTokenGuid = Guid.NewGuid();
+
         var dateNow = DateTime.UtcNow;
         var accessTokenExpiredSecond = dateNow.AddSeconds(_jwtSetting.AccessTokenExpireSeconds).ToUnixTimeSeconds();
         var refreshTokenExpiredSecond = dateNow.AddSeconds(_jwtSetting.RefreshTokenExpireSeconds).ToUnixTimeSeconds();
 
-        var accessToken = JwtHelper.GenerateToken(newAccount.Id, assessTokenGuid.ToString(), _jwtSetting.AccessTokenExpireSeconds, _jwtSetting.Key, _jwtSetting.Issuer);
 
-        var refreshToken = JwtHelper.GenerateToken(newAccount.Id, refreshTokenGuid.ToString(), _jwtSetting.RefreshTokenExpireSeconds, _jwtSetting.Key, _jwtSetting.Issuer);
+        var accessToken = CreateAccessToken(newAccount.Id, refreshTokenGuid.ToString());
 
-        await _accessTokenRepository.Create(new AccessToken { Account = newAccount, Token = assessTokenGuid, ExpireTime = accessTokenExpiredSecond }, false);
+        var refreshToken = CreateRefreshToken(newAccount.Id, refreshTokenGuid.ToString());
+
+        await _accessTokenRepository.Create(new AccessToken { Account = newAccount, Token = assessTokenGuid, ExpireTime = accessTokenExpiredSecond, Status = Common.Enums.TokenStatus.Alive }, false);
 
 
-        await _refreshTokenRepository.Create(new RefreshToken { Account = newAccount, Token = refreshTokenGuid, ExpireTime = accessTokenExpiredSecond }, true);
+        await _refreshTokenRepository.Create(new RefreshToken { Account = newAccount, Token = refreshTokenGuid, ExpireTime = accessTokenExpiredSecond, Status = Common.Enums.TokenStatus.Alive }, true);
 
         var accountDTO = Mapper.Map<AccountDTO>(newAccount);
 
@@ -103,6 +134,94 @@ public class AuthService : BaseService<Account>
 
         return registerDTO;
 
+    }
+
+    private async Task<(string accessToken, string refreshToken)> CreateAccessTokenAndWriteToDB(Account account)
+    {
+
+        var assessTokenGuid = Guid.NewGuid();
+        var refreshTokenGuid = Guid.NewGuid();
+
+        var dateNow = DateTime.UtcNow;
+        var accessTokenExpiredSecond = dateNow.AddSeconds(_jwtSetting.AccessTokenExpireSeconds).ToUnixTimeSeconds();
+        var refreshTokenExpiredSecond = dateNow.AddSeconds(_jwtSetting.RefreshTokenExpireSeconds).ToUnixTimeSeconds();
+
+
+        var accessToken = CreateAccessToken(account.Id, assessTokenGuid.ToString());
+
+        var refreshToken = CreateRefreshToken(account.Id, refreshTokenGuid.ToString());
+
+        await _accessTokenRepository.Create(new AccessToken { AccountId = account.Id, Token = assessTokenGuid, ExpireTime = accessTokenExpiredSecond, Status = Common.Enums.TokenStatus.Alive }, false);
+
+
+        await _refreshTokenRepository.Create(new RefreshToken { AccountId = account.Id, Token = refreshTokenGuid, ExpireTime = refreshTokenExpiredSecond, Status = Common.Enums.TokenStatus.Alive }, true);
+
+
+        return (accessToken, refreshToken);
+    }
+
+    private string CreateAccessToken(int id, string guid)
+    {
+        return JwtHelper.GenerateToken(id, guid, _jwtSetting.AccessTokenExpireSeconds, _jwtSetting.Key, _jwtSetting.Issuer);
+    }
+
+    private string CreateRefreshToken(int id, string guid) => JwtHelper.GenerateToken(id, guid, _jwtSetting.RefreshTokenExpireSeconds, _jwtSetting.Key, _jwtSetting.Issuer);
+
+
+    public async Task RevokeAccessToken(string accessTokenGuid)
+    {
+        var parseResult = Guid.TryParse(accessTokenGuid, out var convertedGuid);
+        if (!parseResult)
+            throw new NotFoundException("Access Token not found.");
+        var lastToken = await _accessTokenRepository.ReadFirst(x => x.Token.ToString() == accessTokenGuid);
+
+        if (lastToken == null)
+        {
+            return;
+        }
+
+        lastToken.Status = Common.Enums.TokenStatus.Revoked;
+
+        await _accessTokenRepository.Update(lastToken);
+
+    }
+
+    public async Task<bool> IsValidAccessToken(string accessTokenGuid)
+    {
+        var parseResult = Guid.TryParse(accessTokenGuid, out var convertedGuid);
+        if (!parseResult)
+            throw new NotFoundException("Access Token not found.");
+        var lastToken = await _accessTokenRepository.ReadFirst(x => x.Token.ToString() == accessTokenGuid);
+
+        if (lastToken == null)
+        {
+            return false;
+        }
+
+        var nowTime = DateTime.UtcNow.ToUnixTimeSeconds();
+
+        if (lastToken.Status == Common.Enums.TokenStatus.Revoked || lastToken.ExpireTime <= nowTime)
+        {
+            return false;
+        }
+
+        return true;
+
+    }
+
+    public async Task<SendEmailDTO> CreateEmailVerifyToken(int uid)
+    {
+        var tokens = await _emailVerifyTokenRepository.ReadList(x => x.AccountId == uid && x.Status == Common.Enums.TokenStatus.Alive, null, null, false);
+        foreach (var token in tokens)
+        {
+            token.Status = TokenStatus.Revoked;
+        }
+        var emailTokenGuid = Guid.NewGuid();
+        var addTimeString = DateTime.UtcNow.AddSeconds(_jwtSetting.EmailTokenExpireSeconds).ToUnixTimeSeconds();
+        var emailToken = JwtHelper.GenerateToken(uid, emailTokenGuid.ToString(), _jwtSetting.EmailTokenExpireSeconds, _jwtSetting.Key, _jwtSetting.Issuer);
+        await _emailVerifyTokenRepository.Create(new EmailVerificationToken { Token = emailTokenGuid, AccountId = uid, ExpireTime = addTimeString });
+
+        return new SendEmailDTO { token = emailToken };
     }
 
 }

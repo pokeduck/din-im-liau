@@ -39,6 +39,7 @@ public class AuthService : BaseService<Account>
         IOptions<JwtSetting> jwtSetting,
         IGenericRepository<AccessToken> accessTokenRepository,
         IGenericRepository<RefreshToken> refreshTokenRepository,
+        IGenericRepository<EmailVerificationToken> emailVerifyTokenRepository,
         IHttpContextAccessor contextAccessor
         ) : base(contextAccessor)
     {
@@ -46,6 +47,7 @@ public class AuthService : BaseService<Account>
         _jwtSetting = jwtSetting.Value;
         _accessTokenRepository = accessTokenRepository;
         _refreshTokenRepository = refreshTokenRepository;
+        _emailVerifyTokenRepository = emailVerifyTokenRepository;
         // var httpContext = contextAccessor.HttpContext!;
         // _accessTokenRepository = httpContext.RequestServices.GetService<IGenericRepository<AccessToken>>()!;
         // _refreshTokenRepository = httpContext.RequestServices.GetService<IGenericRepository<RefreshToken>>()!;
@@ -209,13 +211,27 @@ public class AuthService : BaseService<Account>
 
     }
 
+    public async Task<List<AccountDTO>> GetAccounts()
+    {
+        var accounts = await Repository.ReadList(x => x.Id == 41);
+        var accountDTOs = new List<AccountDTO>();
+        foreach (var a in accounts)
+        {
+            a.EmailValidStatus = EmailVerificationStatus.valid;
+            var accountDTO = Mapper.Map<AccountDTO>(a);
+            accountDTOs.Add(accountDTO);
+        }
+        return accountDTOs;
+    }
+
     public async Task<SendEmailDTO> CreateEmailVerifyToken(int uid)
     {
-        var tokens = await _emailVerifyTokenRepository.ReadList(x => x.AccountId == uid && x.Status == Common.Enums.TokenStatus.Alive, null, null, false);
+        var tokens = await _emailVerifyTokenRepository.ReadList(x => x.AccountId == uid);
         foreach (var token in tokens)
         {
             token.Status = TokenStatus.Revoked;
         }
+        await _emailVerifyTokenRepository.UpdateRange(tokens);
         var emailTokenGuid = Guid.NewGuid();
         var addTimeString = DateTime.UtcNow.AddSeconds(_jwtSetting.EmailTokenExpireSeconds).ToUnixTimeSeconds();
         var emailToken = JwtHelper.GenerateToken(uid, emailTokenGuid.ToString(), _jwtSetting.EmailTokenExpireSeconds, _jwtSetting.Key, _jwtSetting.Issuer);

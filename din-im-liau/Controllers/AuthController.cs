@@ -27,6 +27,15 @@ public class AuthController(AuthService authService, AccountService accountServi
 
     private readonly RefreshTokenService _refreshTokenService = refreshTokenService;
 
+    [AllowAnonymous]
+    [HttpPost("tset-account")]
+    public async Task<IActionResult> TestList()
+    {
+
+        Response200.Data = await _authService.GetAccounts();
+        return Ok(Response200);
+    }
+
     /// <summary>
     /// 登入
     /// </summary>
@@ -158,6 +167,7 @@ public class AuthController(AuthService authService, AccountService accountServi
         Response200.Data = _authService.CreateEmailVerifyToken(Account.Id);
         return Ok(Response200);
     }
+
 
 
     /// <summary>

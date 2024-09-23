@@ -1,5 +1,6 @@
 
 using System.ComponentModel.DataAnnotations;
+using System.Data.SqlTypes;
 using System.Runtime.Serialization;
 
 namespace Models.DTOs;
@@ -18,6 +19,13 @@ public class AccountDTO
     [Required]
     public bool? IsEmailVerified { get; set; }
 
+    public string? Email { get; set; }
+
+    [Required]
+    public int? AccountStatus { get; set; }
+
+    [Required]
+    public string? AccountStatusText { get; set; }
 
 
 }

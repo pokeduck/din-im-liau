@@ -8,6 +8,7 @@ using Swashbuckle.AspNetCore.Annotations;
 using Microsoft.AspNetCore.Authorization;
 using Models.Exceptions;
 using Microsoft.AspNetCore.Http.HttpResults;
+using din_im_liau.Middlewares;
 
 namespace din_im_liau.Controllers;
 
@@ -60,8 +61,8 @@ public class UserController : BaseController
     [SwaggerSuccessResponse(typeof(GenericResponse<AccountDTO>))]
     public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileRequest body)
     {
-
-        return Ok(body);
+        Response200.Data = await AccountService.UpdateAccount(Account.Id, body);
+        return Ok(Response200);
     }
 
 
@@ -70,6 +71,7 @@ public class UserController : BaseController
     /// </summary>
     /// <param name="condition">列表條件</param>
     /// <returns></returns>
+    [AdminOnlyFilter]
     [HttpPost("list")]
     public async Task<IActionResult> List([FromBody] UserListRequest condition)
     {

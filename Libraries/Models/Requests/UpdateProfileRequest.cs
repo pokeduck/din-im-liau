@@ -1,5 +1,6 @@
 
 using System.ComponentModel.DataAnnotations;
+using Models.Attributes;
 
 namespace Models.Requests;
 
@@ -7,7 +8,9 @@ namespace Models.Requests;
 
 public class UpdateProfileRequest
 {
-    [Required]
-    public string Name { get; set; }
+    public string? Name { get; set; }
+    [EmailOptional]
+    public string? Email { get; set; }
+
 
 }

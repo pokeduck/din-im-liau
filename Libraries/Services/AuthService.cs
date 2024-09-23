@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Validations;
 using Models.DataModels;
 using Models.DTOs;
@@ -116,7 +117,8 @@ public class AuthService : BaseService<Account>
         var refreshTokenExpiredSecond = dateNow.AddSeconds(_jwtSetting.RefreshTokenExpireSeconds).ToUnixTimeSeconds();
 
 
-        var accessToken = CreateAccessToken(newAccount.Id, refreshTokenGuid.ToString());
+
+        var accessToken = CreateAccessToken(newAccount.Id, refreshTokenGuid.ToString(), "role");
 
         var refreshToken = CreateRefreshToken(newAccount.Id, refreshTokenGuid.ToString());
 
@@ -148,8 +150,9 @@ public class AuthService : BaseService<Account>
         var accessTokenExpiredSecond = dateNow.AddSeconds(_jwtSetting.AccessTokenExpireSeconds).ToUnixTimeSeconds();
         var refreshTokenExpiredSecond = dateNow.AddSeconds(_jwtSetting.RefreshTokenExpireSeconds).ToUnixTimeSeconds();
 
+        var role = account.PermissionId == 1 ? "admin" : "user";
 
-        var accessToken = CreateAccessToken(account.Id, assessTokenGuid.ToString());
+        var accessToken = CreateAccessToken(account.Id, assessTokenGuid.ToString(), role);
 
         var refreshToken = CreateRefreshToken(account.Id, refreshTokenGuid.ToString());
 
@@ -162,9 +165,9 @@ public class AuthService : BaseService<Account>
         return (accessToken, refreshToken);
     }
 
-    private string CreateAccessToken(int id, string guid)
+    private string CreateAccessToken(int id, string guid, string role)
     {
-        return JwtHelper.GenerateToken(id, guid, _jwtSetting.AccessTokenExpireSeconds, _jwtSetting.Key, _jwtSetting.Issuer);
+        return JwtHelper.GenerateToken(id, guid, _jwtSetting.AccessTokenExpireSeconds, _jwtSetting.Key, _jwtSetting.Issuer, role);
     }
 
     private string CreateRefreshToken(int id, string guid) => JwtHelper.GenerateToken(id, guid, _jwtSetting.RefreshTokenExpireSeconds, _jwtSetting.Key, _jwtSetting.Issuer);
@@ -226,7 +229,7 @@ public class AuthService : BaseService<Account>
 
     public async Task<SendEmailDTO> CreateEmailVerifyToken(int uid)
     {
-        var tokens = await _emailVerifyTokenRepository.ReadList(x => x.AccountId == uid);
+        var tokens = await _emailVerifyTokenRepository.ReadList(x => x.AccountId == uid && x.Status == TokenStatus.Alive);
         foreach (var token in tokens)
         {
             token.Status = TokenStatus.Revoked;
@@ -235,9 +238,47 @@ public class AuthService : BaseService<Account>
         var emailTokenGuid = Guid.NewGuid();
         var addTimeString = DateTime.UtcNow.AddSeconds(_jwtSetting.EmailTokenExpireSeconds).ToUnixTimeSeconds();
         var emailToken = JwtHelper.GenerateToken(uid, emailTokenGuid.ToString(), _jwtSetting.EmailTokenExpireSeconds, _jwtSetting.Key, _jwtSetting.Issuer);
-        await _emailVerifyTokenRepository.Create(new EmailVerificationToken { Token = emailTokenGuid, AccountId = uid, ExpireTime = addTimeString });
+        await _emailVerifyTokenRepository.Create(new EmailVerificationToken { Token = emailTokenGuid, AccountId = uid, ExpireTime = addTimeString, Status = TokenStatus.Alive });
 
         return new SendEmailDTO { token = emailToken };
     }
 
+
+    public async Task<object> VerifyEmail(string token)
+    {
+
+        var jwt = JwtHelper.DecodeTokenGuid(token);
+        var uid = jwt.Uid;
+        if (string.IsNullOrEmpty(jwt.Guid) || uid == null)
+        {
+            throw new NotFoundException("token exipred!");
+        }
+
+        var parseResult = Guid.TryParse(jwt.Guid, out var convertedGuid);
+        if (parseResult == false)
+        {
+            throw new NotFoundException("token exipred!");
+        }
+
+        var lastToken = await _emailVerifyTokenRepository.ReadFirst(x => x.Token == convertedGuid) ?? throw new NotFoundException("token exipred!");
+
+        var now = DateTime.UtcNow.ToUnixTimeSeconds();
+        if (lastToken.Status == TokenStatus.Revoked || lastToken.ExpireTime <= now)
+        {
+            throw new NotFoundException("Your token has exipred! Please resend it.");
+        }
+
+        var lastAccount = await Repository.ReadFirstById(uid ?? 0) ?? throw new NotFoundException("token exipred!");
+
+        if (lastAccount.AccountStatus == (AccountStatus.Disabled | AccountStatus.Deleted))
+        {
+            throw new NotFoundException("Your token has exipred! Please resend it.");
+        }
+
+        lastAccount.AccountStatus = AccountStatus.Verified;
+        lastAccount.EmailValidStatus = EmailVerificationStatus.valid;
+        await Repository.Update(lastAccount);
+
+        return new { result = "ok", message = "Your email has already been verified." };
+    }
 }

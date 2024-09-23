@@ -5,6 +5,7 @@ using System.Text.Json.Serialization;
 using Common.Extensions;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.VisualBasic;
 
 // using System.IdentityModel.Tokens.Jwt;
 // using System.Security.Claims;
@@ -65,8 +66,20 @@ public class GoogleJwtPayloadModel
 
 public class JwtHelper
 {
+    public static (string? Guid, int? Uid) DecodeTokenGuid(string token)
+    {
+        var jwt = new JsonWebTokenHandler().ReadJsonWebToken(token);
+        jwt.TryGetPayloadValue<string>("jti", out var guid);
+        jwt.TryGetPayloadValue<string>("uid", out var uid);
+        if (int.TryParse(uid, out var parsedUid))
+        {
+            return (guid, parsedUid);
+        }
+        return (guid, null);
 
-    public static string GenerateToken(int uid, string guidString, long expSpanSeconds, string key, string issuer)
+    }
+
+    public static string GenerateToken(int uid, string guidString, long expSpanSeconds, string key, string issuer, string? role = null)
     {
 
 
@@ -85,6 +98,10 @@ public class JwtHelper
             new("uid",uid.ToString()),
             new(JwtRegisteredClaimNames.Iat, now.ToUnixTimeSecondsString())
         };
+        if (!string.IsNullOrEmpty(role))
+        {
+            claims.Add(new("role", role));
+        }
 
         var newUserClaimsIdentity = new ClaimsIdentity(claims);
 

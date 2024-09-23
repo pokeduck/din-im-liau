@@ -8,15 +8,19 @@ using Models.DataModels;
 using Models.DTOs;
 using Models.Exceptions;
 using Models.Repositories;
+using Models.Requests;
 using Models.ViewModels;
 
 namespace Services;
 
 public class AccountService : BaseService<Account>
 {
+    private readonly IGenericRepository<EmailVerificationToken> _emailVerifyTokenRepository;
 
-    public AccountService(IHttpContextAccessor contextAccessor) : base(contextAccessor)
+    public AccountService(IHttpContextAccessor contextAccessor, IGenericRepository<EmailVerificationToken> emailVerifyTokenRepository) : base(contextAccessor)
     {
+        _emailVerifyTokenRepository = emailVerifyTokenRepository;
+
         Console.WriteLine("init");
     }
 
@@ -88,5 +92,30 @@ public class AccountService : BaseService<Account>
         account.Nickname = nickName;
 
         await Repository.Update(account);
+    }
+
+    public async Task<AccountDTO> UpdateAccount(int uid, UpdateProfileRequest profile)
+    {
+        var lastAccount = await Repository.ReadFirstById(uid) ?? throw new NotFoundException("User not found.");
+        if (profile.Email != null && profile.Email != lastAccount.Email)
+        {
+            var lastSameEmailAccount = await Repository.ReadFirst(x => x.Email == profile.Email);
+            if (lastSameEmailAccount != null)
+            {
+                throw new BadRequestException("Email Alread used.");
+            }
+            lastAccount.Email = profile.Email;
+            lastAccount.EmailValidStatus = Common.Enums.EmailVerificationStatus.invalid;
+        }
+
+        if (profile.Name != null)
+        {
+            lastAccount.Nickname = profile.Name;
+        }
+
+        await Repository.Update(lastAccount);
+
+        return Mapper.Map<AccountDTO>(lastAccount);
+
     }
 }

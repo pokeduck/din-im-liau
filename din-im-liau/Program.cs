@@ -331,8 +331,11 @@ try
 
     var app = builder.Build();
 
-
-
+    // db migration
+    var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<DataContext>();
+    db.Database.Migrate();
+    //
 
     // using var scope = app.Services.CreateScope();
     // var service = scope.ServiceProvider;

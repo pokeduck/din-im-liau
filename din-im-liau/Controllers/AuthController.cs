@@ -154,7 +154,8 @@ public class AuthController(AuthService authService, AccountService accountServi
     [HttpGet("verify-email")]
     public async Task<IActionResult> EmailVerification([FromQuery] string token)
     {
-        return Ok(new { token = token });
+        Response200.Data = await _authService.VerifyEmail(token);
+        return Ok(Response200);
     }
 
     /// <summary>
@@ -164,7 +165,7 @@ public class AuthController(AuthService authService, AccountService accountServi
     [HttpPost("resend-verify-email")]
     public async Task<IActionResult> SendVerifyEmail()
     {
-        Response200.Data = _authService.CreateEmailVerifyToken(Account.Id);
+        Response200.Data = await _authService.CreateEmailVerifyToken(Account.Id);
         return Ok(Response200);
     }
 

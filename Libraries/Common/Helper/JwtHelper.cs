@@ -96,11 +96,11 @@ public class JwtHelper
             new(JwtRegisteredClaimNames.Jti,localGuidString),
             new(JwtRegisteredClaimNames.Exp, expTime.ToUnixTimeSecondsString()),
             new("uid",uid.ToString()),
-            new(JwtRegisteredClaimNames.Iat, now.ToUnixTimeSecondsString())
+            new(JwtRegisteredClaimNames.Iat, now.ToUnixTimeSecondsString()),
         };
         if (!string.IsNullOrEmpty(role))
         {
-            claims.Add(new("role", role));
+            claims.Add(new("account_level", role));
         }
 
         var newUserClaimsIdentity = new ClaimsIdentity(claims);

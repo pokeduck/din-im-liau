@@ -71,7 +71,7 @@ public class UserController : BaseController
     /// </summary>
     /// <param name="condition">列表條件</param>
     /// <returns></returns>
-    [AdminOnlyFilter]
+    [AuthorizeRoleAdmin]
     [HttpPost("list")]
     public async Task<IActionResult> List([FromBody] UserListRequest condition)
     {

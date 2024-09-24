@@ -117,8 +117,10 @@ public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEnt
 
     public async Task UpdateRange(List<TEntity> entities)
     {
-        if (entities is IEnumerable<IUpdateEntity> updateEntities) {
-            foreach(var e in updateEntities) {
+        if (entities is IEnumerable<IUpdateEntity> updateEntities)
+        {
+            foreach (var e in updateEntities)
+            {
                 e.UpdateTime = DateTime.Now.ToUnixTimeSeconds();
             }
         }
@@ -150,4 +152,13 @@ public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEnt
             await _dataContext.SaveChangesAsync();
     }
 
+    public async Task<int> Count(
+        Expression<Func<TEntity, bool>>? predicate = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IQueryable<TEntity>>? order = null,
+        bool asNoTracking = true
+    ) => await Query(predicate, include, order, asNoTracking).CountAsync();
+
+
+    
 }

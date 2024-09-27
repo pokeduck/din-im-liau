@@ -1,15 +1,11 @@
 
-using Amazon.S3.Model;
 using Common.Helper;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.Extensions.DependencyInjection;
 using Models.DataModels;
 using Models.DTOs;
 using Models.Exceptions;
 using Models.Repositories;
 using Models.Requests;
-using Models.ViewModels;
 
 namespace Services;
 
